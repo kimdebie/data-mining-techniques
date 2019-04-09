@@ -5,7 +5,8 @@ filename = 'dataset_mood_smartphone.csv'
 
 def main():
 
-    preprocess.load(filename)
+    data = preprocess.load(filename)
+    clean_data = preprocess.clean(data)
 
 
 if __name__ == '__main__':

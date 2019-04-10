@@ -7,7 +7,10 @@ from datetime import datetime
 from scipy import stats
 import numpy as np
 from sklearn import preprocessing
-#import pyplot.matplotlib as plt
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+from sklearn.impute import SimpleImputer
 
 def load(filename):
 
@@ -59,6 +62,23 @@ def clean(data):
     print(data.head())
     print(data.shape)
 
+    # select columns that need to be normalized
+    selected_df = data.iloc[:,2:]
+
+    # replace NaN with most frequent value --> WE CAN ALSO USE ANOTHER METHOD THAT DEALS WITH NANs
+    imp = SimpleImputer(strategy="most_frequent")
+    cleaned_df = imp.fit_transform(selected_df)
+    cleaned_df = pd.DataFrame(cleaned_df, columns = selected_df.columns)
+
+    # perform normalization
+    min_max_scaler = preprocessing.MinMaxScaler()
+    data_normalized = pd.DataFrame(min_max_scaler.fit_transform(cleaned_df), columns = cleaned_df.columns, index = cleaned_df.index)
+
+    # verification - plot few observations
+    print(data_normalized.head())
+    data_normalized['mood'].iloc[1:10].plot(kind='bar')
+    plt.show()
+
     # https://scikit-learn.org/stable/modules/preprocessing.html
     # super useful library for preprocessing data!
 
@@ -69,10 +89,15 @@ def clean(data):
     # https://www.analyticsvidhya.com/blog/2016/07/practical-guide-data-preprocessing-python-scikit-learn/
     # https://medium.com/@sidereal/feature-preprocessing-for-machine-learning-2f165d12012a
 
-    data.to_csv('cleaned.csv')
+    # get id and time columns
+    first_columns = data.iloc[:,:2]
+
+    # write to csv
+    data = pd.concat([first_columns.reset_index(drop=True), data_normalized.reset_index(drop=True)], axis = 1)
+    print(data.head())
+    data.to_csv('cleaned_normalized.csv')
 
     return data
-
 
 def create_features_ML(clean_data):
 

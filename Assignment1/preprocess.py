@@ -10,7 +10,7 @@ from sklearn import preprocessing
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-from sklearn.impute import SimpleImputer
+# from sklearn.impute import SimpleImputer
 
 def load(filename):
 
@@ -73,6 +73,10 @@ def clean(data):
     # perform normalization
     min_max_scaler = preprocessing.MinMaxScaler()
     data_normalized = pd.DataFrame(min_max_scaler.fit_transform(cleaned_df), columns = cleaned_df.columns, index = cleaned_df.index)
+
+    columns_to_scale = [col for col in cleaned_df.columns if not col in ['id', 'time']]
+    cleaned_df[columns_to_scale] = min_max_scaler.fit_transform(cleaned_df[columns_to_scale])
+    data.to_csv('normalized2.csv')
 
     # verification - plot few observations
     print(data_normalized.head())

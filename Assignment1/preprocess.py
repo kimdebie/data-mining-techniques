@@ -10,7 +10,7 @@ from sklearn import preprocessing
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-# from sklearn.impute import SimpleImputer
+from sklearn.impute import SimpleImputer
 
 def load(filename):
 
@@ -59,47 +59,35 @@ def clean(data):
     # instead of exact datetime, calculate datetime relative to first datetime (timediff in hours)
     data['time'] = data.groupby('id')['time'].transform(lambda x: x - x.min())
 
-    print(data.head())
-    print(data.shape)
+    # print(data.head())
+    # print(data.shape)
 
-    # select columns that need to be normalized
-    selected_df = data.iloc[:,2:]
+    # select columns to be normalized
+    cleaned_df = data
+    columns_to_scale = [col for col in cleaned_df.columns if not col in ['id', 'time']]
 
     # replace NaN with most frequent value --> WE CAN ALSO USE ANOTHER METHOD THAT DEALS WITH NANs
     imp = SimpleImputer(strategy="most_frequent")
-    cleaned_df = imp.fit_transform(selected_df)
-    cleaned_df = pd.DataFrame(cleaned_df, columns = selected_df.columns)
+    cleaned_df[columns_to_scale] = imp.fit_transform(cleaned_df[columns_to_scale])
 
-    # perform normalization
+    # perform normalization on required columns
     min_max_scaler = preprocessing.MinMaxScaler()
-    data_normalized = pd.DataFrame(min_max_scaler.fit_transform(cleaned_df), columns = cleaned_df.columns, index = cleaned_df.index)
-
-    columns_to_scale = [col for col in cleaned_df.columns if not col in ['id', 'time']]
     cleaned_df[columns_to_scale] = min_max_scaler.fit_transform(cleaned_df[columns_to_scale])
-    data.to_csv('normalized2.csv')
 
-    # verification - plot few observations
-    print(data_normalized.head())
-    data_normalized['mood'].iloc[1:10].plot(kind='bar')
+    # verification - plot distributions per variable
+    print(cleaned_df.head())
+    cleaned_df.hist(column=columns_to_scale, bins=100)
     plt.show()
 
     # https://scikit-learn.org/stable/modules/preprocessing.html
     # super useful library for preprocessing data!
 
-    # https://chrisalbon.com/python/data_wrangling/pandas_normalize_column/
-    # uses that library - seems a good idea!
-
     # some other blogs i came across:
     # https://www.analyticsvidhya.com/blog/2016/07/practical-guide-data-preprocessing-python-scikit-learn/
     # https://medium.com/@sidereal/feature-preprocessing-for-machine-learning-2f165d12012a
 
-    # get id and time columns
-    first_columns = data.iloc[:,:2]
-
     # write to csv
-    data = pd.concat([first_columns.reset_index(drop=True), data_normalized.reset_index(drop=True)], axis = 1)
-    print(data.head())
-    data.to_csv('cleaned_normalized.csv')
+    cleaned_df.to_csv('cleaned_normalized.csv')
 
     return data
 

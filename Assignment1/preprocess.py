@@ -66,9 +66,18 @@ def clean(data):
     cleaned_df = data
     columns_to_scale = [col for col in cleaned_df.columns if not col in ['id', 'time']]
 
+    # number of NaNs per column
+    print(data.isna().sum())
+
+    # there are a substantial number of missing values for activity and appCat.entertainment
+    # we should probably not use appCat.entertainment in our analysis
+
     # replace NaN with most frequent value --> WE CAN ALSO USE ANOTHER METHOD THAT DEALS WITH NANs
-    imp = SimpleImputer(strategy="most_frequent")
-    cleaned_df[columns_to_scale] = imp.fit_transform(cleaned_df[columns_to_scale])
+    #imp = SimpleImputer(strategy="most_frequent")
+    #cleaned_df[columns_to_scale] = imp.fit_transform(cleaned_df[columns_to_scale])
+
+    # replace NaN with mean for that specific person (mode not suitable with sparse values)
+    cleaned_df = cleaned_df.groupby('id').transform(lambda x: x.fillna(x.mean()))
 
     # perform normalization on required columns
     min_max_scaler = preprocessing.MinMaxScaler()

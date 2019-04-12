@@ -80,14 +80,9 @@ def clean(data):
 
 
     # replace NaN with mean for that specific person (mode not suitable with sparse values)
-    cleaned_df = cleaned_df.groupby(['id']).transform(lambda x: x.fillna(x.mean()))
+    cleaned_df[columns_to_scale] = cleaned_df.groupby(['id'])[columns_to_scale].transform(lambda x: x.fillna(x.mean()))
 
-    # After line above: 'id' is certainly gone???
-    print("'id' in cleaned_df: ")
-    print('id' in list(cleaned_df.columns.values))
-    # See: (doesn't help however)
-
-
+    print(cleaned_df.columns)
 
     # perform normalization on required columns
     min_max_scaler = preprocessing.MinMaxScaler()

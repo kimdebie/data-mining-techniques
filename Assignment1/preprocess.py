@@ -64,7 +64,9 @@ def clean(data):
 
     # select columns to be normalized
     cleaned_df = data
+
     columns_to_scale = [col for col in cleaned_df.columns if not col in ['id', 'time']]
+
 
     # number of NaNs per column
     print(data.isna().sum())
@@ -76,16 +78,27 @@ def clean(data):
     #imp = SimpleImputer(strategy="most_frequent")
     #cleaned_df[columns_to_scale] = imp.fit_transform(cleaned_df[columns_to_scale])
 
+
     # replace NaN with mean for that specific person (mode not suitable with sparse values)
-    cleaned_df = cleaned_df.groupby('id').transform(lambda x: x.fillna(x.mean()))
+    cleaned_df = cleaned_df.groupby(['id']).transform(lambda x: x.fillna(x.mean()))
+
+    # After line above: 'id' is certainly gone???
+    print("'id' in cleaned_df: ")
+    print('id' in list(cleaned_df.columns.values))
+    # See: (doesn't help however)
+
+
 
     # perform normalization on required columns
     min_max_scaler = preprocessing.MinMaxScaler()
     cleaned_df[columns_to_scale] = min_max_scaler.fit_transform(cleaned_df[columns_to_scale])
 
     # verification - plot distributions per variable
-    print(cleaned_df.head())
-    cleaned_df.hist(column=columns_to_scale, bins=100)
+    # print(cleaned_df.head())
+    fig = cleaned_df.hist(column=columns_to_scale, bins=100)
+    [x.title.set_size(10) for x in fig.ravel()]
+    plt.suptitle("Histogram distribution per variable", fontsize = 14)
+    plt.subplots_adjust(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.6, hspace=0.6)
     plt.show()
 
     # https://scikit-learn.org/stable/modules/preprocessing.html

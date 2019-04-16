@@ -80,7 +80,7 @@ data = pd.read_csv('cleaned_normalized.csv', header = 0)
 data = data.drop(columns=["Unnamed: 0"])
 
 # average 4 days, 5th day is target
-k=4
+k=2
 avg_dataset = average_k_dataset(data, k)
 print("Shape of dataset after average over {} days: {}".format(k,avg_dataset.shape))
 

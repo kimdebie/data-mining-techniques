@@ -7,17 +7,17 @@ filename_clean = 'cleaned_normalized.csv'
 
 def main():
 
-    data = preprocess.load(filename)
+############## PRE PROCESS DATA (only once) #############################
+    #data = preprocess.load(filename)
+    #clean_data = preprocess.clean(data)
 
-    # print(data['id'])
-    clean_data = preprocess.clean(data)
+############## READ CLEANED DATA ########################################
+    data = pd.read_csv(filename_clean)
+    data = data.drop(columns=["Unnamed: 0"])
+    print(data.head())
 
-    clean_data = pd.read_csv(filename_clean)
+############## EXTRACT FEATURES #########################################
 
-    # print(clean_data['time'])
-
-    # print(clean_data.loc[clean_data['time'] == 840])
-    # print(clean_data.loc[clean_data['time'] == 864])
 
 if __name__ == '__main__':
     main()

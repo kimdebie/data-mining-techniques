@@ -41,27 +41,24 @@ def average_dataset(data):
 ---GENERAL---
 Average previous k days and set (k+1)'th day as target
 """
-def average_k_dataset(data, k):
+def average_k_dataset(data, k, target_row=False):
     # initialize dataframes
     mean_df = pd.DataFrame()
     previous_k = pd.DataFrame()
     targets = []
-    target_row = False
 
     # iterate over data rows
     for idx, row in data.iterrows():
+        previous_k = previous_k.append(row)
 
         # check if current row is used as target
         if target_row == True:
             target_row = False
             continue
 
-        previous_k = previous_k.append(row)
-        
         # after k rows, calculate mean and set target (if end is not reached!)
         if (idx+1) % k == 0 and idx != (data.shape[0]-1):
-            print(previous_k)
-            mean_previous = previous_k.mean(axis=1,skipna=True)
+            mean_previous = previous_k.mean(axis=0)
             mean_df = mean_df.append(mean_previous, ignore_index=True)
             targets.append(data.iloc[idx+1]['mood'])
             previous_k = pd.DataFrame()
@@ -83,24 +80,25 @@ data = pd.read_csv('cleaned_normalized.csv', header = 0)
 data = data.drop(columns=["Unnamed: 0"])
 
 # average 4 days, 5th day is target
-av_dataset = average_k_dataset(data, 4)
-print(av_dataset.head())
+k=4
+avg_dataset = average_k_dataset(data, k)
+print("Shape of dataset after average over {} days: {}".format(k,avg_dataset.shape))
 
 # get average data set and mood class
 # dataset = average_dataset(data)
 
 # divide data in attributes and target
-# X = av_dataset.drop('label', axis=1)
-# y = av_dataset['label']
-#
-# # split data
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
-# print("Shape of training data: {} \n Shape of test data: {}".format(X_train.shape, X_test.shape))
-#
-# # train classifier
-# svclassifier = SVC(kernel='linear')
-# svclassifier.fit(X_train, y_train)
-# y_pred = svclassifier.predict(X_test)
-#
-# print(confusion_matrix(y_test,y_pred))
-# print(classification_report(y_test,y_pred))
+X = avg_dataset.drop('label', axis=1)
+y = avg_dataset['label']
+
+# split data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
+print("Shape of training data: {} \n Shape of test data: {}".format(X_train.shape, X_test.shape))
+
+# train classifier
+svclassifier = SVC(kernel='linear')
+svclassifier.fit(X_train, y_train)
+y_pred = svclassifier.predict(X_test)
+
+print(confusion_matrix(y_test,y_pred))
+print(classification_report(y_test,y_pred))

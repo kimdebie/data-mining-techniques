@@ -1,5 +1,6 @@
 import preprocess
 import analyze
+import pivot
 import pandas as pd
 
 filename = 'dataset_mood_smartphone.csv'
@@ -20,6 +21,12 @@ def main():
     print(data.head())
 
 ############## EXTRACT FEATURES #########################################
+
+    columns_to_lag = ["mood"]
+    lags = [5]
+
+    for col, i in enumerate(columns_to_lag):
+        pivot.create_lagged_vars(filename_clean, col, lags[i])
 
 
 if __name__ == '__main__':

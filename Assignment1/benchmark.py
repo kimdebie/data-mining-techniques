@@ -23,7 +23,7 @@ def benchmark(file):
     rsquared = r2_score(data["mood"], data["predicted_mood"])
     mse = mean_squared_error(data["mood"], data["predicted_mood"])
 
-    plt.scatter(data['mood'], data['predicted_mood'])
+    plt.scatter(data['mood'], data['predicted_mood'], c=data["id"])
     plt.show()
 
     return rsquared, mse

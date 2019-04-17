@@ -22,11 +22,15 @@ def main():
 
 ############## EXTRACT FEATURES #########################################
 
+
+    # creating lagged variables
     columns_to_lag = ["mood"]
     lags = [5]
 
     for col, i in enumerate(columns_to_lag):
-        pivot.create_lagged_vars(filename_clean, col, lags[i])
+        data = pivot.create_lagged_vars(data, col, lags[i])
+
+
 
 
 if __name__ == '__main__':

@@ -1,8 +1,7 @@
 import pandas as pd
 
-def create_lagged_vars(file, colname, lags=5, hours=24):
+def create_lagged_vars(df, colname, lags=5, hours=24):
 
-    df = pd.read_csv(file)
     df = df.drop("Unnamed: 0", axis=1)
 
     discols = []
@@ -39,11 +38,3 @@ def create_lagged_vars(file, colname, lags=5, hours=24):
     df.to_csv('with_lags.csv')
 
     return df
-
-
-df = pd.read_csv('cleaned_normalized.csv')
-df = df[["id", "time", "mood", "appCat.builtin"]]
-df.to_csv('test.csv')
-
-create_lagged_vars('test.csv', "mood")
-create_lagged_vars('with_lags.csv', "appCat.builtin")

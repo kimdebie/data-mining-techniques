@@ -8,8 +8,11 @@ filename_clean = 'cleaned_normalized.csv'
 def main():
 
 ############## PRE PROCESS DATA (only once) #############################
-    #data = preprocess.load(filename)
-    #clean_data = preprocess.clean(data)
+    data = preprocess.load(filename)
+    clean_data = preprocess.clean(data)
+    for col in clean_data.columns:
+        print(clean_data[col].min())
+        print(clean_data[col].max())
 
 ############## READ CLEANED DATA ########################################
     data = pd.read_csv(filename_clean)

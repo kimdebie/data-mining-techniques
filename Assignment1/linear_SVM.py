@@ -4,10 +4,12 @@ SVM with linear kernel. Dataset is averaged in order to perform classification.
 
 import pandas as pd
 import numpy as np
+import warnings
+warnings.filterwarnings("ignore")
 
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 """
 ---USER SPECIFIC---
@@ -64,22 +66,38 @@ def average_k_dataset(data, k, target_row=False):
             previous_k = pd.DataFrame()
             target_row = True
 
-    df = target_to_label(mean_df, targets)
+    df = target_to_label(mean_df, targets, 3)
     return df
 
 """
 Convert mood targets to labels and append to dataset
 """
-def target_to_label(df, targets):
-    labels = ["{0:.1f}".format(t) for t in targets]
-    df['label'] = labels
+def target_to_label(df, targets, n_classes=3):
+    # positive, neutral, negative mood class
+    if n_classes == 3:
+        labels = []
+        for t in targets:
+            if t<=0.33:
+                labels.append(1)
+            elif t>0.33 and t<=0.66:
+                labels.append(2)
+            else:
+                labels.append(3)
+        df['label'] = labels
+
+    # scale of 1 to 10
+    elif n_classes == 10:
+        labels = ["{0:.1f}".format(t) for t in targets]
+        df['label'] = labels
+    else:
+        raise Exception("Number of classes must be 3 or 10")
     return df
 
 # read data
 data = pd.read_csv('cleaned_normalized.csv', header = 0)
 data = data.drop(columns=["Unnamed: 0"])
 
-# average 4 days, 5th day is target
+# average k days, (k+1)'th day is target
 k=2
 avg_dataset = average_k_dataset(data, k)
 print("Shape of dataset after average over {} days: {}".format(k,avg_dataset.shape))
@@ -100,5 +118,9 @@ svclassifier = SVC(kernel='linear')
 svclassifier.fit(X_train, y_train)
 y_pred = svclassifier.predict(X_test)
 
+# evaluation metrics
+print("-------------------Confusion matrix-------------------")
 print(confusion_matrix(y_test,y_pred))
+print("-------------Precision and Recall metrics-------------")
 print(classification_report(y_test,y_pred))
+print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy_score(y_test,y_pred)))

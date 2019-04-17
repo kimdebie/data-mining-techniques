@@ -23,6 +23,10 @@ def main():
 ############## EXTRACT FEATURES #########################################
 
 
+    # removing all redundant columns / keeping those that we want features for
+    cols_to_keep = ["id", "time", "mood", "weather"]
+    df = df[cols_to_keep]
+
     # creating lagged variables
     columns_to_lag = ["mood"]
     lags = [5]

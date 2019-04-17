@@ -109,6 +109,8 @@ print("Shape of dataset after average over {} days: {}".format(k,avg_dataset.sha
 X = avg_dataset.drop('label', axis=1)
 y = avg_dataset['label']
 
+print(avg_dataset.head())
+
 # split data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
 print("Shape of training data: {} \n Shape of test data: {}".format(X_train.shape, X_test.shape))

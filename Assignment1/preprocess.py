@@ -21,6 +21,9 @@ def load(filename):
     data = data.drop(columns=["Unnamed: 0"])
     data["time"] = data["time"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d %H:%M:%S.%f"))
 
+    # retrieve weather data
+    weather_data = weather_info('KNMI_20140701.csv')
+
     # save data on day level (change this line for different granularity)
     data["time"] = data["time"].apply(lambda x: x.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()/ (60*60))
 
@@ -30,6 +33,7 @@ def load(filename):
 
     # variables as columns
     data = data.pivot_table(index=['id', 'time'], columns='variable', values='value').reset_index()
+    print(data.head())
 
     # aggregating methods for each column (mean or sum) depending on data semantics
     aggtypes = {'mood': 'mean', 'circumplex.arousal': 'mean', 'circumplex.valence': 'mean',
@@ -45,9 +49,23 @@ def load(filename):
     print(pivoted.shape)
     print(pivoted.head())
 
-    return pivoted
+    # merge datasets
+    data = pd.merge(pivoted, weather_data, how='left', on='time')
 
+    return data
 
+def weather_info(weather_file):
+    weather_data = pd.read_csv(weather_file, skiprows = 15)
+    weather_data = weather_data.drop(weather_data.columns[0], axis=1)
+
+    headers = ['time', 'min_temp', 'max_temp', 'sun', 'rain']
+    weather_data.columns = headers
+
+    # set datetime object
+    weather_data["time"] = weather_data["time"].astype(str)
+    weather_data["time"] = weather_data["time"].apply(lambda x: datetime.strptime(x, "%Y%m%d"))
+    weather_data["time"] = weather_data["time"].apply(lambda x: x.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()/ (60*60))
+    return weather_data
 def clean(data):
 
     '''Remove redundant rows, outliers, normalize data etc.'''

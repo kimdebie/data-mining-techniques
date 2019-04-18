@@ -2,7 +2,8 @@ import pandas as pd
 
 def create_lagged_vars(df, colname, lags=5, hours=24):
 
-    df = df.drop("Unnamed: 0", axis=1)
+    if "Unnamed:0" in df.columns:
+        df = df.drop("Unnamed: 0", axis=1)
 
     discols = []
 
@@ -30,11 +31,6 @@ def create_lagged_vars(df, colname, lags=5, hours=24):
         df[newcol] = df.groupby("id")[colname].shift(lag+1)
 
 
-    # many rows are unusable so we drop them
-    df = df.dropna()
 
-    print(df.columns)
-
-    df.to_csv('with_lags.csv')
 
     return df

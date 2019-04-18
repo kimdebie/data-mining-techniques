@@ -36,15 +36,23 @@ def main():
     correlations.to_csv('correlations.csv')
 
     # removing all redundant columns / keeping those that we want features for
-    cols_to_keep = ["id", "time", "mood", "weather"]
-    df = df[cols_to_keep]
+    cols_to_keep = ["id", "time", "mood", "weekday", "sun", \
+        "rain", "max_temp", "total_appuse", "activity", "circumplex.arousal", \
+        "circumplex.valence"]
 
-    # creating lagged variables
-    columns_to_lag = ["mood"]
-    lags = [5]
+    data = data[cols_to_keep]
 
-    for col, i in enumerate(columns_to_lag):
-        data = pivot.create_lagged_vars(data, col, lags[i])
+    # creating lagged variables for the following columns (with defined durations)
+    columns_to_lag = ["mood", "circumplex.arousal", "circumplex.valence"]
+    lags = [4, 3, 3]
+
+    for i, col in enumerate(columns_to_lag):
+        data = pivot.create_lagged_vars(data, col, lags=lags[i])
+
+    # many rows are unusable so we drop them
+    data = data.dropna()
+
+    data.to_csv("with_features.csv")
 
 
 

@@ -2,6 +2,7 @@ import pandas as pd
 from pandas.plotting import autocorrelation_plot
 from pandas.plotting import lag_plot
 import matplotlib.pyplot as plt
+import pivot
 
 def autocorrelation(file):
 
@@ -25,4 +26,26 @@ def autocorrelation(file):
         # plt.title("Lag plot for user " + id)
         # plt.show()
 
-autocorrelation('cleaned_normalized.csv')
+def corr_with_lag(file, col, lags=5):
+
+    data = pd.read_csv(file)
+
+    data = data[["id", "time", "mood", col]]
+    print(data.head())
+
+    data_lag = pivot.create_lagged_vars(data, col, lags)
+
+    for lag in range(lags):
+
+        colname = col + "_lag" + str(lag+1)
+        data_lag.plot(x='mood', y=colname, style='o')
+        plt.show()
+
+    print(data_lag.head())
+    corrs = data_lag.corr()
+    print(corrs["mood"])
+
+    return data_lag
+
+#autocorrelation('cleaned_normalized.csv')
+corr_with_lag('cleaned_normalized.csv', 'total_appuse')

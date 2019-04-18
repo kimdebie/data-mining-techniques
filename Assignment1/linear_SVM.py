@@ -83,14 +83,14 @@ def target_to_label(df, targets, n_classes=3):
                 labels.append(2)
             else:
                 labels.append(3)
-        df['label'] = labels
 
     # scale of 1 to 10
     elif n_classes == 10:
         labels = ["{0:.1f}".format(t) for t in targets]
-        df['label'] = labels
     else:
         raise Exception("Number of classes must be 3 or 10")
+
+    df['label'] = labels
     return df
 
 # read data
@@ -101,15 +101,14 @@ data = data.drop(columns=["Unnamed: 0"])
 k=2
 avg_dataset = average_k_dataset(data, k)
 print("Shape of dataset after average over {} days: {}".format(k,avg_dataset.shape))
-
-# get average data set and mood class
-# dataset = average_dataset(data)
+print(avg_dataset[avg_dataset['label']==1]['mood'].shape)
+print(avg_dataset[avg_dataset['label']==2]['mood'].shape)
+print(avg_dataset[avg_dataset['label']==3]['mood'].shape)
 
 # divide data in attributes and target
-X = avg_dataset.drop('label', axis=1)
+X = avg_dataset.drop(['label', 'mood', 'circumplex.arousal', 'circumplex.valence'], axis=1)
+print(X.columns)
 y = avg_dataset['label']
-
-print(avg_dataset.head())
 
 # split data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
@@ -125,4 +124,5 @@ print("-------------------Confusion matrix-------------------")
 print(confusion_matrix(y_test,y_pred))
 print("-------------Precision and Recall metrics-------------")
 print(classification_report(y_test,y_pred))
-print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy_score(y_test,y_pred)))
+accuracy = accuracy_score(y_test,y_pred)
+print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy))

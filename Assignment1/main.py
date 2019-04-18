@@ -35,6 +35,8 @@ def main():
     correlations = calculate_pvalues(data)
     correlations.to_csv('correlations.csv')
 
+    unobtrusive = data
+
     # removing all redundant columns / keeping those that we want features for
     cols_to_keep = ["id", "time", "mood", "weekday", "sun", \
         "rain", "max_temp", "total_appuse", "activity", "circumplex.arousal", \
@@ -54,6 +56,27 @@ def main():
 
     data.to_csv("with_features.csv")
 
+
+
+    # Creating unobtrusive-only dataset
+
+    # removing all redundant columns / keeping those that we want features for
+    un_cols_to_keep = ["id", "time", "mood", "weekday", "sun", \
+        "rain", "max_temp", "total_appuse", "activity"]
+
+    unobtrusive = unobtrusive[un_cols_to_keep]
+
+    # creating lagged variables for the following columns (with defined durations)
+    un_columns_to_lag = ["total_appuse", "max_temp"]
+    lags = [4, 3]
+
+    for i, col in enumerate(un_columns_to_lag):
+        unobtrusive = pivot.create_lagged_vars(unobtrusive, col, lags=lags[i])
+
+    # many rows are unusable so we drop them
+    unobtrusive = unobtrusive.dropna()
+
+    unobtrusive.to_csv("unobtrusive_with_features.csv")
 
 
 

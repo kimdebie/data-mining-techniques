@@ -5,6 +5,13 @@ import pandas as pd
 from scipy.stats import pearsonr
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
+
+from SVM import SVM_model, balanced_classes
+from linearregr import linearregr
+from benchmark import benchmark
+from scipy.stats import wilcoxon
+
 
 filename = 'dataset_mood_smartphone.csv'
 filename_clean = 'cleaned_normalized.csv'
@@ -72,17 +79,18 @@ def main():
 
 
     ## Correlations
-    
+
     data_with_lags = pd.read_csv('with_lags.csv')
     data_with_lags = data_with_lags.drop(columns=["Unnamed: 0"])
     correlations = calculate_pvalues(data_with_lags)
     correlations.to_csv('correlations.csv')
 
     correlations = correlations.astype(float)
-    correlations = correlations[['mood', 'appCat.builtin']]
     # correlations = correlations.drop(['time'], axis=0)
     sns.heatmap(correlations)
     plt.show()
+
+    ####################### MODELS #########################################
 
 
 def calculate_pvalues(df):
@@ -103,4 +111,47 @@ def calculate_pvalues(df):
     return pvalues
 
 if __name__ == '__main__':
-    main()
+    # main()
+    data = pd.read_csv('with_features.csv',index_col=0)
+
+    # create class labels for SVM
+    n_classes = 4
+    data = balanced_classes(data, data['mood'].as_matrix(), n_classes)
+
+    # split data in training and test set
+    msk = np.random.rand(len(data)) < 0.8
+    train_data = data[msk]
+    test_data = data[~msk]
+
+    print(train_data.shape, test_data.shape)
+
+    X_train = train_data.drop(['mood', 'label', 'id', 'time'], axis=1)
+    X_test = test_data.drop(['mood', 'label', 'id', 'time'], axis=1)
+    Y_train_svm = train_data['label']
+    Y_train = train_data['mood']
+    Y_test_svm = test_data['label']
+    Y_test = test_data['mood']
+
+    print(len(test_data))
+
+    # perform experiments with different models
+    mse, acc, correct_class_svm = SVM_model(X_train, X_test, Y_train_svm, Y_test_svm)
+    print("SVM Accuracy: {}, MSE: {}".format(acc, mse))
+
+    mse2, acc2, correct_class_regr = linearregr(X_train, X_test, Y_train, Y_test)
+    print("Lin. Regression Accuracy: {}, MSE: {}".format(acc2, mse2))
+
+    mse3, acc3, correct_class_bench = benchmark(test_data)
+    print("Benchmark Accuracy: {}, MSE: {}".format(acc3,mse3))
+
+    print("svm, bench")
+    print(len(correct_class_bench))
+    print(len(correct_class_svm))
+    print(len(correct_class_regr))
+    print(wilcoxon(correct_class_svm, correct_class_bench))
+    print("svm, lin")
+    print(wilcoxon(correct_class_svm, correct_class_regr))
+    print("bench, lin")
+    print(wilcoxon(correct_class, regr, correct_class_bench))
+
+

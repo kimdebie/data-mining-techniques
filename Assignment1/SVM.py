@@ -1,7 +1,3 @@
-"""
-SVM with linear kernel. Dataset is averaged in order to perform classification.
-"""
-
 import pandas as pd
 import numpy as np
 import warnings
@@ -9,7 +5,7 @@ warnings.filterwarnings("ignore")
 
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, mean_squared_error
 
 """
 ---USER SPECIFIC---
@@ -111,40 +107,22 @@ def balanced_classes(df, targets, n_classes):
     df['label'] = labels
     return df
 
-def linear_SVM(data, previous, n_classes):
-
-    # read data
-    # data = pd.read_csv('cleaned_normalized.csv', header = 0)
-    # data = data.drop(columns=["Unnamed: 0"])
-
-    # average k days, (k+1)'th day is target
-    #avg_dataset = average_k_dataset(data, k)
-
-    X = balanced_classes(data, data['mood'], n_classes)
-    print("Shape of dataset: {}".format(data.shape))
-    print(data[data['label']==1]['mood'].shape)
-    print(data[data['label']==2]['mood'].shape)
-    print(data[data['label']==3]['mood'].shape)
-    print(data[data['label']==4]['mood'].shape)
-
-    # divide data in attributes and target
-    # X = data.drop(['label', 'mood', 'circumplex.arousal', 'circumplex.valence'], axis=1)
-    print(X.columns)
-    y = data['label']
-
-    # split data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
-    print("Shape of training data: {} \n Shape of test data: {}".format(X_train.shape, X_test.shape))
+def SVM_model(X_train, X_test, Y_train, Y_test):
 
     # train classifier
     svclassifier = SVC(kernel='linear')
-    svclassifier.fit(X_train, y_train)
+    svclassifier.fit(X_train, Y_train)
     y_pred = svclassifier.predict(X_test)
 
     # evaluation metrics
     print("-------------------Confusion matrix-------------------")
-    print(confusion_matrix(y_test,y_pred))
+    print(confusion_matrix(Y_test,y_pred))
     print("-------------Precision and Recall metrics-------------")
-    print(classification_report(y_test,y_pred))
-    accuracy = accuracy_score(y_test,y_pred)
-    print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy))
+    print(classification_report(Y_test,y_pred))
+    accuracy = accuracy_score(Y_test,y_pred)
+    # print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy))
+
+    correct = Y_test == y_pred
+    mse = mean_squared_error(y_pred, Y_test)
+
+    return mse, accuracy, [1 if c == True else 0 for c in correct]

@@ -111,36 +111,40 @@ def balanced_classes(df, targets, n_classes):
     df['label'] = labels
     return df
 
-# read data
-data = pd.read_csv('cleaned_normalized.csv', header = 0)
-data = data.drop(columns=["Unnamed: 0"])
+def linear_SVM(data, previous, n_classes):
 
-# average k days, (k+1)'th day is target
-k=2
-avg_dataset = average_k_dataset(data, k)
-print("Shape of dataset after average over {} days: {}".format(k,avg_dataset.shape))
-print(avg_dataset[avg_dataset['label']==1]['mood'].shape)
-print(avg_dataset[avg_dataset['label']==2]['mood'].shape)
-print(avg_dataset[avg_dataset['label']==3]['mood'].shape)
+    # read data
+    # data = pd.read_csv('cleaned_normalized.csv', header = 0)
+    # data = data.drop(columns=["Unnamed: 0"])
 
-# divide data in attributes and target
-X = avg_dataset.drop(['label', 'mood', 'circumplex.arousal', 'circumplex.valence'], axis=1)
-print(X.columns)
-y = avg_dataset['label']
+    # average k days, (k+1)'th day is target
+    #avg_dataset = average_k_dataset(data, k)
 
-# split data
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
-print("Shape of training data: {} \n Shape of test data: {}".format(X_train.shape, X_test.shape))
+    X = balanced_classes(data, data['mood'], n_classes)
+    print("Shape of dataset: {}".format(data.shape))
+    print(data[data['label']==1]['mood'].shape)
+    print(data[data['label']==2]['mood'].shape)
+    print(data[data['label']==3]['mood'].shape)
+    print(data[data['label']==4]['mood'].shape)
 
-# train classifier
-svclassifier = SVC(kernel='linear')
-svclassifier.fit(X_train, y_train)
-y_pred = svclassifier.predict(X_test)
+    # divide data in attributes and target
+    # X = data.drop(['label', 'mood', 'circumplex.arousal', 'circumplex.valence'], axis=1)
+    print(X.columns)
+    y = data['label']
 
-# evaluation metrics
-print("-------------------Confusion matrix-------------------")
-print(confusion_matrix(y_test,y_pred))
-print("-------------Precision and Recall metrics-------------")
-print(classification_report(y_test,y_pred))
-accuracy = accuracy_score(y_test,y_pred)
-print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy))
+    # split data
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.20)
+    print("Shape of training data: {} \n Shape of test data: {}".format(X_train.shape, X_test.shape))
+
+    # train classifier
+    svclassifier = SVC(kernel='linear')
+    svclassifier.fit(X_train, y_train)
+    y_pred = svclassifier.predict(X_test)
+
+    # evaluation metrics
+    print("-------------------Confusion matrix-------------------")
+    print(confusion_matrix(y_test,y_pred))
+    print("-------------Precision and Recall metrics-------------")
+    print(classification_report(y_test,y_pred))
+    accuracy = accuracy_score(y_test,y_pred)
+    print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy))

@@ -2,6 +2,8 @@ import pandas as pd
 
 def create_lagged_vars(df, colname, lags=5, hours=24):
 
+    '''Create lagged versions of the specified variables'''
+
     if "Unnamed:0" in df.columns:
         df = df.drop("Unnamed: 0", axis=1)
 
@@ -29,8 +31,6 @@ def create_lagged_vars(df, colname, lags=5, hours=24):
 
         newcol = colname + "_lag" + str(lag+1)
         df[newcol] = df.groupby("id")[colname].shift(lag+1)
-
-
 
 
     return df

@@ -6,6 +6,8 @@ import pivot
 
 def autocorrelation(file):
 
+    '''Checking for autocorrelation within mood variable''''
+
     df = pd.read_csv(file)
 
     df = df[["id", "time", "mood"]]
@@ -20,13 +22,15 @@ def autocorrelation(file):
         plt.show()
 
 
-        # lag_plot(series)
-        # plt.xlabel("Mood at current timepoint")
-        # plt.ylabel("Mood at next timepoint")
-        # plt.title("Lag plot for user " + id)
-        # plt.show()
+        lag_plot(series)
+        plt.xlabel("Mood at current timepoint")
+        plt.ylabel("Mood at next timepoint")
+        plt.title("Lag plot for user " + id)
+        plt.show()
 
 def corr_with_lag(file, col, lags=5):
+
+    '''Checking whether lags of other variables correlate with current mood'''
 
     data = pd.read_csv(file)
 

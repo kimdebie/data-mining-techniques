@@ -1,17 +1,15 @@
 import pandas as pd
-from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
 import matplotlib.pyplot as plt
 
-def benchmark(file):
+def benchmark(data):
 
     '''Implements a benchmark metric for predicting mood: mood is the same as the previous day'''
-
-    data = pd.read_csv(file)
 
     data = data[["id", "time", "mood"]]
 
     data["mood"].hist()
-    plt.show()
+    #plt.show()
 
     # predicted mood is mood of previous day
     data["predicted_mood"] = data["mood"].shift(1)
@@ -19,17 +17,16 @@ def benchmark(file):
     # we can only do this for observations with 1 day in between
     data = data[data["time"].diff() == 24].dropna()
 
-    print(data.head())
     rsquared = r2_score(data["mood"], data["predicted_mood"])
     mse = mean_squared_error(data["mood"], data["predicted_mood"])
 
-    plt.scatter(data['mood'], data['predicted_mood'], c=data["id"])
-    plt.show()
-
-    return rsquared, mse
+    accuracy = accuracy_score(data['mood'], data['predicted_mood'])
 
 
-rsquared, mse = benchmark('cleaned_normalized.csv')
+    plt.scatter(data['mood'], data['predicted_mood'])
+    #plt.show()
 
-print('rsquared: %.2f' % rsquared)
-print('mse: %.5f' % mse) # this is low because data is downscaled (we should multiply it by 10 I think)
+    return mse, accuracy, 
+
+# print('rsquared: %.2f' % rsquared)
+# print('mse: %.5f' % mse) # this is low because data is downscaled (we should multiply it by 10 I think)

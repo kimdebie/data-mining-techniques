@@ -7,7 +7,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-from SVM import SVM_model
+from SVM import SVM_model, balanced_classes
+from linearregr import linearregr
+from benchmark import benchmark
 
 filename = 'dataset_mood_smartphone.csv'
 filename_clean = 'cleaned_normalized.csv'
@@ -108,9 +110,32 @@ def calculate_pvalues(df):
 
 if __name__ == '__main__':
     # main()
-    feature_data = pd.read_csv('with_features.csv',index_col=0)
+    data = pd.read_csv('unobtrusive_with_features.csv',index_col=0)
 
-    
+    # create class labels for SVM
+    n_classes = 4
+    data = balanced_classes(data, data['mood'].as_matrix(), n_classes)
 
-    mse, acc, correct_class = SVM_model(feature_data, 4)
-    print("Accuracy: {0:.3f}, MSE: {0:.3f}".format(acc, mse))
+    # split data in training and test set
+    msk = np.random.rand(len(data)) < 0.8
+    train_data = data[msk]
+    test_data = data[~msk]
+
+    print(train_data.shape, test_data.shape)
+
+    X_train = train_data.drop(['mood', 'label', 'id', 'time'], axis=1)
+    X_test = test_data.drop(['mood', 'label', 'id', 'time'], axis=1)
+    Y_train_svm = train_data['label']
+    Y_train = train_data['mood']
+    Y_test_svm = test_data['label']
+    Y_test = test_data['mood']
+
+    # perform experiments with different models
+    mse, acc, correct_class_svm = SVM_model(X_train, X_test, Y_train_svm, Y_test_svm)
+    print("SVM Accuracy: {}, MSE: {}".format(acc, mse))
+
+    mse2, acc2, correct_class_regr = linearregr(X_train, X_test, Y_train, Y_test)
+    print("Lin. Regression Accuracy: {}, MSE: {}".format(acc2, mse2))
+
+    mse3 = benchmark(test_data)
+    print("Benchmark Accuracy: ..., MSE: {}".format(mse3))

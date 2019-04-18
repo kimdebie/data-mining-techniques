@@ -12,11 +12,17 @@ def autocorrelation(file):
     for id in df["id"].unique():
 
         series = df[df["id"] == id].mood
-        #autocorrelation_plot(series)
-        lag_plot(series)
-        plt.xlabel("Mood at current timepoint")
-        plt.ylabel("Mood at next timepoint")
-        plt.title("Lag plot for user " + id)
+
+
+        autocorrelation_plot(series)
+        plt.title("Autocorrelation plot for user " + id)
         plt.show()
+
+
+        # lag_plot(series)
+        # plt.xlabel("Mood at current timepoint")
+        # plt.ylabel("Mood at next timepoint")
+        # plt.title("Lag plot for user " + id)
+        # plt.show()
 
 autocorrelation('cleaned_normalized.csv')

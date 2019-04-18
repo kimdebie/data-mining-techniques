@@ -66,7 +66,8 @@ def average_k_dataset(data, k, target_row=False):
             previous_k = pd.DataFrame()
             target_row = True
 
-    df = target_to_label(mean_df, targets, 3)
+    #df = target_to_label(mean_df, targets, 3)
+    df = balanced_classes(mean_df, targets, 4)
     return df
 
 """
@@ -89,6 +90,23 @@ def target_to_label(df, targets, n_classes=3):
         labels = ["{0:.1f}".format(t) for t in targets]
     else:
         raise Exception("Number of classes must be 3 or 10")
+
+    df['label'] = labels
+    return df
+
+def balanced_classes(df, targets, n_classes):
+    labels = np.zeros((len(targets),), dtype=int)
+    sorted_targets = np.sort(targets)
+    arg_sorted_targets = np.argsort(targets)
+    quantiles = np.array_split(sorted_targets, n_classes)
+
+    # i represents the class label (1...n_classes)
+    j=0
+    for i, quantile in enumerate(quantiles):
+        for target in quantile:
+            idx = arg_sorted_targets[j]
+            labels[idx] = i+1
+            j+=1
 
     df['label'] = labels
     return df

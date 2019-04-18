@@ -23,8 +23,8 @@ def calculate_pvalues(df):
 def main():
 
 ############## PRE PROCESS DATA (only once) #############################
-    # data = preprocess.load(filename)
-    # clean_data = preprocess.clean(data)
+    data = preprocess.load(filename)
+    clean_data = preprocess.clean(data)
 
 ############## READ CLEANED DATA ########################################
     data = pd.read_csv(filename_clean)
@@ -38,9 +38,10 @@ def main():
     unobtrusive = data
 
     # removing all redundant columns / keeping those that we want features for
-    cols_to_keep = ["id", "time", "mood", "weekday", "sun", \
+    cols_to_keep = ["id", "time", "mood", "sun", \
         "rain", "max_temp", "total_appuse", "activity", "circumplex.arousal", \
-        "circumplex.valence"]
+        "circumplex.valence", "weekdaydummy0", "weekdaydummy1", "weekdaydummy2", \
+        "weekdaydummy3", "weekdaydummy4", "weekdaydummy5", "weekdaydummy6"]
 
     data = data[cols_to_keep]
 
@@ -61,8 +62,9 @@ def main():
     # Creating unobtrusive-only dataset
 
     # removing all redundant columns / keeping those that we want features for
-    un_cols_to_keep = ["id", "time", "mood", "weekday", "sun", \
-        "rain", "max_temp", "total_appuse", "activity"]
+    un_cols_to_keep = ["id", "time", "mood", "sun", \
+        "rain", "max_temp", "total_appuse", "activity", "weekdaydummy0", "weekdaydummy1", \
+        "weekdaydummy2", "weekdaydummy3", "weekdaydummy4", "weekdaydummy5", "weekdaydummy6"]
 
     unobtrusive = unobtrusive[un_cols_to_keep]
 

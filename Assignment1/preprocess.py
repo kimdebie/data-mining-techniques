@@ -72,7 +72,7 @@ def clean(data):
     '''Remove redundant rows, outliers, normalize data etc.'''
 
     # include weekday
-    data['weekday'] = data['time'].apply(lambda x: x.weekday())
+    data = weekday_dummies(data)
     data["time"] = data["time"].apply(lambda x: x.timestamp() / (60*60))
 
 
@@ -88,7 +88,7 @@ def clean(data):
     # instead of exact datetime, calculate datetime relative to first datetime (timediff in hours)
     data['time'] = data.groupby('id')['time'].transform(lambda x: x - x.min())
 
-    # print(data.head())
+    print(data.head())
     # print(data.shape)
 
     # select columns to be normalized
@@ -146,3 +146,11 @@ def no_outlier(x, z=3):
     zscores = (x - x.mean()).div(x.std() + 1e-10)
 
     return zscores.apply(lambda x: False if pd.notnull(x) and x > z else True)
+
+def weekday_dummies(data):
+
+    for i in range(7):
+        colname = 'weekdaydummy' + str(i)
+        data[colname] = data['time'].apply(lambda x: x.weekday() == i)
+
+    return data

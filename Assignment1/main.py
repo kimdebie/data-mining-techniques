@@ -43,8 +43,8 @@ def main():
     data = data[cols_to_keep]
 
     # creating lagged variables for the following columns (with defined durations)
-    columns_to_lag = ["mood", "circumplex.arousal", "circumplex.valence"]
-    lags = [4, 3, 3]
+    columns_to_lag = ["mood", "circumplex.arousal", "circumplex.valence", "total_appuse", "max_temp"]
+    lags = [4, 3, 3, 3, 3]
 
     for i, col in enumerate(columns_to_lag):
         data = pivot.create_lagged_vars(data, col, lags=lags[i])

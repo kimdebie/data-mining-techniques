@@ -48,4 +48,4 @@ def corr_with_lag(file, col, lags=5):
     return data_lag
 
 #autocorrelation('cleaned_normalized.csv')
-corr_with_lag('cleaned_normalized.csv', 'total_appuse')
+corr_with_lag('cleaned_normalized.csv', 'rain')

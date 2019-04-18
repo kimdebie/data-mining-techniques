@@ -10,6 +10,8 @@ import numpy as np
 from SVM import SVM_model, balanced_classes
 from linearregr import linearregr
 from benchmark import benchmark
+from scipy.stats import wilcoxon
+
 
 filename = 'dataset_mood_smartphone.csv'
 filename_clean = 'cleaned_normalized.csv'
@@ -130,6 +132,8 @@ if __name__ == '__main__':
     Y_test_svm = test_data['label']
     Y_test = test_data['mood']
 
+    print(len(test_data))
+
     # perform experiments with different models
     mse, acc, correct_class_svm = SVM_model(X_train, X_test, Y_train_svm, Y_test_svm)
     print("SVM Accuracy: {}, MSE: {}".format(acc, mse))
@@ -139,3 +143,15 @@ if __name__ == '__main__':
 
     mse3, acc3, correct_class_bench = benchmark(test_data)
     print("Benchmark Accuracy: {}, MSE: {}".format(acc3,mse3))
+
+    print("svm, bench")
+    print(len(correct_class_bench))
+    print(len(correct_class_svm))
+    print(len(correct_class_regr))
+    print(wilcoxon(correct_class_svm, correct_class_bench))
+    print("svm, lin")
+    print(wilcoxon(correct_class_svm, correct_class_regr))
+    print("bench, lin")
+    print(wilcoxon(correct_class, regr, correct_class_bench))
+
+

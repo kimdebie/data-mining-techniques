@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 def benchmark(data):
 
     '''Implements a benchmark metric for predicting mood: mood is the same as the previous day'''
-
+    print(len(data))
     data = data[["id", "time", "mood"]]
 
     data["mood"].hist()
@@ -21,6 +21,7 @@ def benchmark(data):
     mse = mean_squared_error(data["mood"], data["predicted_mood"])
 
     ypred = data["predicted_mood"]
+    print(len(ypred.values))
     Y_test = data["mood"]
 
     # Define accuracy with 10% error range

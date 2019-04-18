@@ -5,6 +5,9 @@ import pandas as pd
 from scipy.stats import pearsonr
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
+
+from SVM import SVM_model
 
 filename = 'dataset_mood_smartphone.csv'
 filename_clean = 'cleaned_normalized.csv'
@@ -72,17 +75,18 @@ def main():
 
 
     ## Correlations
-    
+
     data_with_lags = pd.read_csv('with_lags.csv')
     data_with_lags = data_with_lags.drop(columns=["Unnamed: 0"])
     correlations = calculate_pvalues(data_with_lags)
     correlations.to_csv('correlations.csv')
 
     correlations = correlations.astype(float)
-    correlations = correlations[['mood', 'appCat.builtin']]
     # correlations = correlations.drop(['time'], axis=0)
     sns.heatmap(correlations)
     plt.show()
+
+    ####################### MODELS #########################################
 
 
 def calculate_pvalues(df):
@@ -103,4 +107,8 @@ def calculate_pvalues(df):
     return pvalues
 
 if __name__ == '__main__':
-    main()
+    # main()
+    feature_data = pd.read_csv('with_features.csv',index_col=0)
+    acc, correct_class = SVM_model(feature_data, 4)
+    print(correct_class)
+    print("Average accuracy: {0:.3f}".format(acc))

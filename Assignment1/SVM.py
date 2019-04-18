@@ -1,7 +1,3 @@
-"""
-SVM with linear kernel. Dataset is averaged in order to perform classification.
-"""
-
 import pandas as pd
 import numpy as np
 import warnings
@@ -111,7 +107,7 @@ def balanced_classes(df, targets, n_classes):
     df['label'] = labels
     return df
 
-def linear_SVM(data, n_classes):
+def SVM_model(data, n_classes):
 
     # read data
     # data = pd.read_csv('cleaned_normalized.csv', header = 0)
@@ -129,7 +125,7 @@ def linear_SVM(data, n_classes):
 
     # divide data in attributes and target
     # X = data.drop(['label', 'mood', 'circumplex.arousal', 'circumplex.valence'], axis=1)
-    X = data.drop([['mood'], ['label']], axis=1)
+    X = data.drop(['mood', 'label', 'id', 'time'], axis=1)
     print(X.columns)
     y = data['label']
 
@@ -149,3 +145,7 @@ def linear_SVM(data, n_classes):
     print(classification_report(y_test,y_pred))
     accuracy = accuracy_score(y_test,y_pred)
     print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy))
+
+    correct = y_test == y_pred
+
+    return accuracy, [1 if c == True else 0 for c in correct]

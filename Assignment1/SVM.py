@@ -111,7 +111,7 @@ def balanced_classes(df, targets, n_classes):
     df['label'] = labels
     return df
 
-def linear_SVM(data, previous, n_classes):
+def linear_SVM(data, n_classes):
 
     # read data
     # data = pd.read_csv('cleaned_normalized.csv', header = 0)
@@ -120,7 +120,7 @@ def linear_SVM(data, previous, n_classes):
     # average k days, (k+1)'th day is target
     #avg_dataset = average_k_dataset(data, k)
 
-    X = balanced_classes(data, data['mood'], n_classes)
+    data = balanced_classes(data, data['mood'].as_matrix(), n_classes)
     print("Shape of dataset: {}".format(data.shape))
     print(data[data['label']==1]['mood'].shape)
     print(data[data['label']==2]['mood'].shape)
@@ -129,6 +129,7 @@ def linear_SVM(data, previous, n_classes):
 
     # divide data in attributes and target
     # X = data.drop(['label', 'mood', 'circumplex.arousal', 'circumplex.valence'], axis=1)
+    X = data.drop([['mood'], ['label']], axis=1)
     print(X.columns)
     y = data['label']
 

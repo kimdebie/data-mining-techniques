@@ -54,8 +54,6 @@ def main():
 
     data.to_csv("with_features.csv")
 
-
-
     ## Creating unobtrusive-only dataset ##
 
     # removing all redundant columns / keeping those that we want features for
@@ -80,18 +78,15 @@ def main():
 
     ## Correlations
 
-    data_with_lags = pd.read_csv('with_lags.csv')
-    data_with_lags = data_with_lags.drop(columns=["Unnamed: 0"])
-    correlations = calculate_pvalues(data_with_lags)
+    features = pd.read_csv('with_features.csv',index_col=0)
+    correlations = calculate_pvalues(features)
     correlations.to_csv('correlations.csv')
 
     correlations = correlations.astype(float)
-    # correlations = correlations.drop(['time'], axis=0)
-    sns.heatmap(correlations)
+    correlations = correlations.drop(['time'], axis=1)
+    correlations = correlations.drop(['time'], axis=0)
+    sns.heatmap(correlations, vmin=0, vmax=1, center=0.5)
     plt.show()
-
-    ####################### MODELS #########################################
-
 
 def calculate_pvalues(df):
     df = df.dropna()._get_numeric_data()
@@ -109,9 +104,10 @@ def calculate_pvalues(df):
             # else:
             #     pvalues[r][c] = p_value
     return pvalues
-
 if __name__ == '__main__':
-    # main()
+
+    main()
+
     data = pd.read_csv('with_features.csv',index_col=0)
 
     # create class labels for SVM

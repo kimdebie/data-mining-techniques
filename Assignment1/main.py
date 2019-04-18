@@ -109,6 +109,8 @@ def calculate_pvalues(df):
 if __name__ == '__main__':
     # main()
     feature_data = pd.read_csv('with_features.csv',index_col=0)
-    acc, correct_class = SVM_model(feature_data, 4)
-    print(correct_class)
-    print("Average accuracy: {0:.3f}".format(acc))
+
+    
+
+    mse, acc, correct_class = SVM_model(feature_data, 4)
+    print("Accuracy: {0:.3f}, MSE: {0:.3f}".format(acc, mse))

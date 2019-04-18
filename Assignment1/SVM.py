@@ -5,7 +5,7 @@ warnings.filterwarnings("ignore")
 
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, mean_squared_error
 
 """
 ---USER SPECIFIC---
@@ -147,5 +147,6 @@ def SVM_model(data, n_classes):
     print("-----------------------Accuracy-----------------------\n{0:.3f}".format(accuracy))
 
     correct = y_test == y_pred
+    mse = mean_squared_error(y_pred, y_test)
 
-    return accuracy, [1 if c == True else 0 for c in correct]
+    return mse, accuracy, [1 if c == True else 0 for c in correct]

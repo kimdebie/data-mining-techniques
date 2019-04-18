@@ -110,7 +110,7 @@ def calculate_pvalues(df):
 
 if __name__ == '__main__':
     # main()
-    data = pd.read_csv('unobtrusive_with_features.csv',index_col=0)
+    data = pd.read_csv('with_features.csv',index_col=0)
 
     # create class labels for SVM
     n_classes = 4
@@ -137,5 +137,5 @@ if __name__ == '__main__':
     mse2, acc2, correct_class_regr = linearregr(X_train, X_test, Y_train, Y_test)
     print("Lin. Regression Accuracy: {}, MSE: {}".format(acc2, mse2))
 
-    mse3 = benchmark(test_data)
-    print("Benchmark Accuracy: ..., MSE: {}".format(mse3))
+    mse3, acc3, correct_class_bench = benchmark(test_data)
+    print("Benchmark Accuracy: {}, MSE: {}".format(acc3,mse3))

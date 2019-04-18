@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
+from sklearn.metrics import r2_score, mean_squared_error
 import matplotlib.pyplot as plt
 
 def benchmark(data):
@@ -20,13 +20,22 @@ def benchmark(data):
     rsquared = r2_score(data["mood"], data["predicted_mood"])
     mse = mean_squared_error(data["mood"], data["predicted_mood"])
 
-    accuracy = accuracy_score(data['mood'], data['predicted_mood'])
+    ypred = data["predicted_mood"]
+    Y_test = data["mood"]
 
+    # Define accuracy with 10% error range
+    accuracy = []
+    for i in range(len(ypred)):
+    	if ypred.values[i] < Y_test.values[i]*1.05 and ypred.values[i] > Y_test.values[i]*0.95:
+    		accuracy.append(1)
+    	else:
+    		accuracy.append(0)
+    acc = float(sum(accuracy)) / float(len(ypred.values))
 
     plt.scatter(data['mood'], data['predicted_mood'])
     #plt.show()
 
-    return mse, accuracy, 
+    return mse, acc, accuracy
 
 # print('rsquared: %.2f' % rsquared)
 # print('mse: %.5f' % mse) # this is low because data is downscaled (we should multiply it by 10 I think)

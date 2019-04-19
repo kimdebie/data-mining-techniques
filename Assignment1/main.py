@@ -1,5 +1,4 @@
 import preprocess
-import analyze
 import pivot
 import pandas as pd
 from scipy.stats import pearsonr
@@ -108,7 +107,7 @@ if __name__ == '__main__':
 
     main()
 
-    data = pd.read_csv('with_features.csv',index_col=0)
+    data = pd.read_csv('unobtrusive_with_features.csv',index_col=0)
 
     # create class labels for SVM
     n_classes = 4
@@ -149,5 +148,3 @@ if __name__ == '__main__':
     print(wilcoxon(correct_class_svm, correct_class_regr))
     print("bench, lin")
     print(wilcoxon(correct_class, regr, correct_class_bench))
-
-

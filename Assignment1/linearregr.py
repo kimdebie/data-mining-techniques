@@ -1,5 +1,4 @@
 import preprocess
-import analyze
 import pivot
 import pandas as pd
 from scipy.stats import pearsonr
@@ -8,6 +7,8 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 import statsmodels.api as sm
 from sklearn.metrics import mean_squared_error, accuracy_score
+import matplotlib.pyplot as plt
+
 
 def linearregr(X_train, X_test, Y_train, Y_test):
 
@@ -16,6 +17,16 @@ def linearregr(X_train, X_test, Y_train, Y_test):
 	mod = sm.OLS(Y_train, X_train)
 	res = mod.fit()
 	ypred = res.predict(X_test)
+
+	residuals = Y_test - ypred
+
+	plt.scatter(ypred, residuals)
+	plt.axhline(0)
+	plt.xlabel("Fitted values")
+	plt.ylabel("Residuals")
+	plt.title("Fitted values vs. residuals")
+	plt.show()
+
 
 	# Define accuracy with 10% error range
 	accuracy = []

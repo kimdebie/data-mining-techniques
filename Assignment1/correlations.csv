@@ -1,9 +1,0 @@
-,time,mood,total_appuse,total_appuse_lag1,total_appuse_lag2,total_appuse_lag3,total_appuse_lag4,total_appuse_lag5
-time,0.0,0.2458,0.0071,0.0144,0.0133,0.007,0.0059,0.0069
-mood,0.2458,0.0,0.0264,0.0095,0.0184,0.0185,0.0455,0.0096
-total_appuse,0.0071,0.0264,0.0,0.0,0.0,0.0,0.0,0.0
-total_appuse_lag1,0.0144,0.0095,0.0,0.0,0.0,0.0,0.0,0.0
-total_appuse_lag2,0.0133,0.0184,0.0,0.0,0.0,0.0,0.0,0.0
-total_appuse_lag3,0.007,0.0185,0.0,0.0,0.0,0.0,0.0,0.0
-total_appuse_lag4,0.0059,0.0455,0.0,0.0,0.0,0.0,0.0,0.0
-total_appuse_lag5,0.0069,0.0096,0.0,0.0,0.0,0.0,0.0,0.0

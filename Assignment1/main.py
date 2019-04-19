@@ -81,11 +81,13 @@ def main():
     features = pd.read_csv('with_features.csv',index_col=0)
     correlations = calculate_pvalues(features)
     correlations.to_csv('correlations.csv')
-
     correlations = correlations.astype(float)
     correlations = correlations.drop(['time'], axis=1)
-    correlations = correlations.drop(['time'], axis=0)
-    sns.heatmap(correlations, vmin=0, vmax=1, center=0.5)
+    correlations = correlations.drop(['time', 'mood', 'total_appuse_lag2', 'total_appuse_lag3', \
+        'max_temp_lag2', 'max_temp_lag3', 'circumplex.arousal_lag2', 'circumplex.arousal_lag3', \
+        'circumplex.valence_lag2', 'circumplex.valence_lag3'], axis=0)
+    plt.figure()
+    sns.heatmap(correlations[['mood', 'circumplex.arousal', 'circumplex.valence']], vmin=0, vmax=1, center=0.5, linewidth=3)
     plt.show()
 
 def calculate_pvalues(df):
@@ -149,5 +151,3 @@ if __name__ == '__main__':
     print(wilcoxon(correct_class_svm, correct_class_regr))
     print("bench, lin")
     print(wilcoxon(correct_class, regr, correct_class_bench))
-
-

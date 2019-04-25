@@ -22,13 +22,16 @@ def main():
         # loading in the right file
         data = load.loaddata(dataset)
 
+        # create competitor features
+        data = features.create_competitor_features(data)
+
         if PERFORM_EDA:
 
             # handling missing values
             data = eda.missing_values(data)
 
-            # create competitor features
-            data = features.create_competitor_features(data)
+            # remove outliers
+            data = eda.remove_outliers(data)
 
             # plot distributions
             eda.plot_distributions(data)

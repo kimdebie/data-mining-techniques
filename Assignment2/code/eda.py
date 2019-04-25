@@ -10,7 +10,6 @@ def missing_values(df):
 
     # Plot the columns with missing values
     missing_values = df.isna().sum().sort_values(ascending=False)[df.isna().sum().sort_values() > 0]
-    print(missing_values)
     fig, ax = plt.subplots()
     missing_values.plot.bar()
 
@@ -20,6 +19,19 @@ def missing_values(df):
     plt.show()
 
     # remove variables containing too many NAs? Something else?
+
+    return df
+
+def remove_outliers(df):
+
+    '''Remove outliers.'''
+
+    print("Outliers")
+
+    # https://stackoverflow.com/questions/46576147/pandas-replace-outliers-in-all-columns-with-nan
+    df = df.mask(df.sub(df.mean()).div(df.std()).abs().gt(2))
+
+    print("Outliers done!")
 
     return df
 

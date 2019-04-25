@@ -10,4 +10,6 @@ def loaddata(filename):
     if 'Unnamed: 0' in df.columns:
         df = df.drop('Unnamed: 0', axis=1)
 
+    print(df.dtypes)
+
     return df

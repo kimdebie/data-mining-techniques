@@ -2,10 +2,12 @@ import load
 import eda
 import process
 import features
+import pandas as pd
 
 # global variables that define what tasks to perform
 READ_RAW_DATA = True
 PERFORM_EDA = True
+REMOVE_OUTLIERS = False
 
 
 def main():
@@ -20,27 +22,36 @@ def main():
         #dataset = '../data/training_subset.csv'
 
         # loading in the right file
-        data = load.loaddata(dataset)
-
-        # create competitor features
-        data = features.create_competitor_features(data)
+        #data = load.loaddata(dataset)
 
         if PERFORM_EDA:
 
             # handling missing values
-            data = eda.missing_values(data)
+            #data = eda.missing_values(data)
 
-            # remove outliers
-            data = eda.remove_outliers(data)
+            if REMOVE_OUTLIERS:
+                # remove outliers
+                data = eda.remove_outliers(data)
+
+            else:
+                data = load.loaddata('../data/outliers_removed.csv')
+
+
+            # create competitor features
+            data = features.create_competitor_features(data)
+
+            # take a sample of the data to make plotting feasible
+            sample_data = data.sample(n=500000)
+            sample_data.to_csv('../data/test.csv')
 
             # plot distributions
-            eda.plot_distributions(data)
+            eda.plot_distributions(sample_data)
 
             # plot correlations between sets of variables
-            eda.plot_correlations(data)
+            eda.plot_correlations(sample_data)
 
             # plot impact of price of competitor on booking
-            eda.plot_competitor_price_impact(data)
+            eda.plot_competitor_price_impact(sample_data)
 
         # divide data into train and test set
         train_data, test_data = process.split_train_test(data)

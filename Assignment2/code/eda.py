@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
+from scipy import stats
 sns.set(style="darkgrid")
 
 def missing_values(df):
@@ -24,16 +25,35 @@ def missing_values(df):
 
 def remove_outliers(df):
 
-    '''Remove outliers.'''
+    '''Remove rows with outliers.'''
 
-    print("Outliers")
+    # only remove outliers from rows with floats
+    df2 = df.select_dtypes(include='float64')
 
-    # https://stackoverflow.com/questions/46576147/pandas-replace-outliers-in-all-columns-with-nan
-    df = df.mask(df.sub(df.mean()).div(df.std()).abs().gt(2))
+    for col in df2.columns:
 
-    print("Outliers done!")
+        df[col] = np_outliers(df[col].values)
+
+    df.to_csv('../data/outliers_removed.csv')
 
     return df
+
+def np_outliers(array):
+
+    '''Function that uses numpy directly rather than pandas to remove outliers for speed'''
+
+    mean = np.mean(array)
+    sd = np.std(array)
+
+    # outliers are more than two standard deviations away from the mean
+    outliers = (array > (mean + 2 * sd)) | (array < (mean - 2 * sd))
+
+    # replace this by quantile method? this is not doing enough I think
+
+    # replace outliers by NaN
+    array[outliers] = np.nan
+
+    return array
 
 
 def plot_distributions(df):
@@ -145,7 +165,7 @@ def plot_competitor_price_impact(df):
 
     '''Plotting the impact of price of competitors on clicking/booking likelihood'''
 
-    bins = [-np.inf, -30, -20, -10, 0, 10, 20, 30, np.inf]
+    bins = [-np.inf, -40, -30, -20, -10, 0, 10, 20, 30, 40, np.inf]
 
     x = []
     y = []
@@ -163,9 +183,9 @@ def plot_competitor_price_impact(df):
         for j, bin in enumerate(bins):
 
             if bin == np.inf:
-                x.append(40)
+                x.append(50)
             elif bin == -np.inf:
-                x.append(-40)
+                x.append(-50)
             else:
                 x.append(bin)
 

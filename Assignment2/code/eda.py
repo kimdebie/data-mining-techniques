@@ -25,12 +25,14 @@ def missing_values(df):
 
 def remove_outliers(df):
 
-    '''Remove rows with outliers.'''
+    '''Replace outliers with NaN.'''
 
     # only remove outliers from rows with floats
     df2 = df.select_dtypes(include='float64')
 
     for col in df2.columns:
+
+        print(col)
 
         df[col] = np_outliers(df[col].values)
 
@@ -42,13 +44,11 @@ def np_outliers(array):
 
     '''Function that uses numpy directly rather than pandas to remove outliers for speed'''
 
-    mean = np.mean(array)
-    sd = np.std(array)
+    upper_quantile = np.nanpercentile(array, 95)
+    lower_quantile = np.nanpercentile(array, 5)
 
     # outliers are more than two standard deviations away from the mean
-    outliers = (array > (mean + 2 * sd)) | (array < (mean - 2 * sd))
-
-    # replace this by quantile method? this is not doing enough I think
+    outliers = (array > upper_quantile) | (array < lower_quantile)
 
     # replace outliers by NaN
     array[outliers] = np.nan

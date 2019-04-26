@@ -7,7 +7,7 @@ import pandas as pd
 # global variables that define what tasks to perform
 READ_RAW_DATA = True
 PERFORM_EDA = True
-REMOVE_OUTLIERS = False
+REMOVE_OUTLIERS = True
 
 
 def main():
@@ -19,10 +19,10 @@ def main():
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
-        #dataset = '../data/training_subset.csv'
+        #dataset = '../data/testfile.csv'
 
         # loading in the right file
-        #data = load.loaddata(dataset)
+        data = load.loaddata(dataset)
 
         if PERFORM_EDA:
 
@@ -30,6 +30,7 @@ def main():
             #data = eda.missing_values(data)
 
             if REMOVE_OUTLIERS:
+
                 # remove outliers
                 data = eda.remove_outliers(data)
 
@@ -42,7 +43,6 @@ def main():
 
             # take a sample of the data to make plotting feasible
             sample_data = data.sample(n=500000)
-            sample_data.to_csv('../data/test.csv')
 
             # plot distributions
             eda.plot_distributions(sample_data)

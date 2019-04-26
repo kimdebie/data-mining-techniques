@@ -19,7 +19,7 @@ def main():
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
-        #dataset = '../data/testfile.csv'
+        dataset = '../data/testfile.csv'
 
         # loading in the right file
         data = load.loaddata(dataset)
@@ -27,7 +27,7 @@ def main():
         if PERFORM_EDA:
 
             # handling missing values
-            #data = eda.missing_values(data)
+            data = eda.missing_values(data)
 
             if REMOVE_OUTLIERS:
 

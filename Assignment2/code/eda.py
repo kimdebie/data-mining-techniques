@@ -198,7 +198,7 @@ def plot_competitor_price_impact(df):
 
     g = sns.lineplot(x=x, y=y, hue=comp)
     plt.xlabel("Price difference with competitor (in %)")
-    g.set(xticklabels=[0] + bins)
+    #g.set(xticklabels=[0] + bins)
     plt.ylabel("Probability of booking")
     plt.title("Price difference with competitor vs. probability of booking")
     plt.show()

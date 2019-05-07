@@ -15,7 +15,7 @@ def main():
     # only read raw data if so required (cleaned files do not exist yet)
     if READ_RAW_DATA:
 
-        dataset = '../data/training_set_VU_DM.csv'
+        #dataset = '../data/training_set_VU_DM.csv'
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
@@ -37,9 +37,15 @@ def main():
             else:
                 data = load.loaddata('../data/outliers_removed.csv')
 
-
+            
             # create competitor features
             data = features.create_competitor_features(data)
+
+            # create other features
+            data = features.other_features(data)
+
+            # add relevance grades
+            data = features.relevance_score(data)
 
             # take a sample of the data to make plotting feasible
             sample_data = data.sample(n=500000)

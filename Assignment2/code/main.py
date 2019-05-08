@@ -3,9 +3,11 @@ import eda
 import process
 import features
 import pandas as pd
+from  lamdamart import LambdaMART
+import numpy as np
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = True
+READ_RAW_DATA = False
 PERFORM_EDA = True
 REMOVE_OUTLIERS = True
 
@@ -68,14 +70,29 @@ def main():
     # data is already loaded - only need to load it from file
     else:
 
-        traindataset = '../data/downsampled_training_set.csv'
+        traindataset = 'data/downsampled_training_set.csv'
         train_data = load.loaddata(traindataset)
+        train_data = features.relevance_score(train_data)
+        train_data = eda.missing_values(train_data)
+        train_data = eda.remove_outliers(train_data)
 
-        testdataset = '../data/test_subset.csv'
+        testdataset = 'data/test_subset.csv'
         test_data = load.loaddata(testdataset)
+        test_data = features.relevance_score(test_data)
+        test_data = eda.missing_values(test_data)
+        test_data = eda.remove_outliers(test_data)
 
+        # Transfer train-data to format for LambdaMart
+        train_data, _ = load.lambdamartformat(train_data)
+        test_data, id_to_doc = load.lambdamartformat(test_data)
 
+        # Train LambdaMart model
+        model = LambdaMART(training_data=train_data, number_of_trees=2, learning_rate=0.05)
+        model.fit()
 
+        # Predict for test data
+        predicted_scores = model.predict(test_data[:,1:])
+    
 
 if __name__ == '__main__':
 

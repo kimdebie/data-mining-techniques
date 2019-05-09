@@ -17,9 +17,13 @@ def missing_values(df):
     fig.tight_layout()
     plt.title("Count of missing values per variable")
     plt.ylabel("Number of values missing")
-    plt.show()
+    # plt.show()
 
     # remove variables containing too many NAs? Something else?
+    # Remove columns if more than 50% is NA, alternative: replace with mean values
+    df = df.dropna(axis=1, thresh = int(0.60*df.shape[0]))
+    # # Next remove observations (rows) that contain na's
+    df = df.dropna(axis=0, how='any')
 
     return df
 
@@ -36,7 +40,7 @@ def remove_outliers(df):
 
         df[col] = np_outliers(df[col].values)
 
-    df.to_csv('../data/outliers_removed.csv')
+    # df.to_csv('../data/outliers_removed.csv')
 
     return df
 

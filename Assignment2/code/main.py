@@ -5,12 +5,15 @@ import load
 import eda
 import process
 import features
+import pandas as pd
+from  lamdamart import LambdaMART
+import numpy as np
 import models
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = True
-PLOT = False
-SAMPLING_METHOD = "downsample" # one of: "downsample", "upsample", "none"
+READ_RAW_DATA = False
+PERFORM_EDA = True
+REMOVE_OUTLIERS = True
 
 
 def main():
@@ -18,7 +21,7 @@ def main():
     # only read raw data if so required (cleaned files do not exist yet)
     if READ_RAW_DATA:
 
-        dataset = '../data/training_set_VU_DM.csv'
+        #dataset = '../data/training_set_VU_DM.csv'
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
@@ -39,10 +42,22 @@ def main():
         # remove outliers
         data = eda.remove_outliers(data)
 
+<<<<<<< HEAD
         # handling missing values
         data = eda.missing_values(data)
 
         if PLOT:
+=======
+
+            # create competitor features
+            data = features.create_competitor_features(data)
+>>>>>>> 357c6479384e9a8b5d3565cb50bc33f4d064157c
+
+            # create other features
+            data = features.other_features(data)
+
+            # add relevance grades
+            data = features.relevance_score(data)
 
             # take a sample of the data to make plotting feasible
             sample_data = data.sample(n=500000)
@@ -70,6 +85,7 @@ def main():
     # when training models, start from here!
     else:
 
+<<<<<<< HEAD
         # test data is always the same
         testdataset = '../data/testing_set.csv'
 
@@ -90,6 +106,20 @@ def main():
         train_data = load.loaddata(traindataset)
         test_data = load.loaddata(testdataset)
 
+=======
+        traindataset = 'data/downsampled_training_set.csv'
+        train_data = load.loaddata(traindataset)
+        train_data = features.relevance_score(train_data)
+        train_data = eda.remove_outliers(train_data)
+        train_data = eda.missing_values(train_data)
+
+        testdataset = 'data/test_subset.csv'
+        test_data = load.loaddata(testdataset)
+        test_data = features.relevance_score(test_data)
+        test_data = eda.remove_outliers(test_data)
+        test_data = eda.missing_values(test_data)
+
+>>>>>>> 357c6479384e9a8b5d3565cb50bc33f4d064157c
         # Train lambdamart and evaluate on test set
         models.lambdamart(train_data, test_data, 2, 0.10)
 

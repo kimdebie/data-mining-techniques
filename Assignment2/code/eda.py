@@ -36,6 +36,7 @@ def remove_outliers(df):
 
     for col in df2.columns:
 
+        print(col)
         df[col] = np_outliers(df[col].values)
 
     return df

@@ -8,7 +8,7 @@ import features
 import models
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = False
+READ_RAW_DATA = True
 PLOT = False
 SAMPLING_METHOD = "downsample" # one of "downsample", "upsample", "none"
 

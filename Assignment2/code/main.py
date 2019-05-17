@@ -6,9 +6,10 @@ import eda
 import process
 import features
 import models
+import correlations
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = True
+READ_RAW_DATA = False
 PLOT = False
 SAMPLING_METHOD = "downsample" # one of "downsample", "upsample", "none"
 
@@ -98,6 +99,9 @@ def main():
         # loading in the data
         train_data = load.loaddata(traindataset)
         test_data = load.loaddata(testdataset)
+
+        # get correlations of the features
+        correlations.show_correlations(train_data)
 
         # Train lambdamart and evaluate on test set
         models.lambdamart(train_data, test_data, 2, 0.10)

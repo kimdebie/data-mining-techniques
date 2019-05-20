@@ -32,20 +32,18 @@ def other_features(df):
 
     return df
 
+def relevance(df):
+    if row['booking_bool'] == True:
+        return 5
+    elif row['click_bool'] == True:
+        return 1
+    else:
+        return 0
+
 def relevance_score(df):
 
     '''Add relevance score based on clicking and booking.'''
 
-
-    scores = []
-    for idx, row in df.iterrows():
-        if row['booking_bool'] == True:
-            scores.append(5)
-        elif row['click_bool'] == True:
-            scores.append(1)
-        else:
-            scores.append(0)
-
-    df['relevance'] = scores
+    df['relevance'] = df.apply(relevance, axis=1)
 
     return df

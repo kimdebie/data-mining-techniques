@@ -7,6 +7,7 @@ import process
 import features
 import models
 from sklearn.model_selection import KFold
+import correlations
 
 # global variables that define what tasks to perform
 READ_RAW_DATA = False
@@ -20,8 +21,6 @@ def main():
     # only read raw data if so required (cleaned files do not exist yet)
     if READ_RAW_DATA:
 
-        #dataset = '../data/training_set_VU_DM.csv'
-
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
         # dataset = 'data/testfile.csv'
@@ -33,9 +32,11 @@ def main():
 
         # # create competitor features
         data = features.create_competitor_features(data)
+        print("compf")
 
         # # create other features
         data = features.other_features(data)
+        print("oth feat")
 
         # # add relevance grades
         data = features.relevance_score(data)
@@ -49,16 +50,7 @@ def main():
         # # add relevance grades
         data = features.relevance_score(data)
 
-        # # remove outliers
-        print("before remove outliers")
-        print(data.dtypes)
-        print(data.loc[data['booking_bool'] == 1].count())
-
         data = eda.remove_outliers(data)
-
-        print("after remove outliers")
-        print(data.dtypes)
-        print(data.loc[data['booking_bool'] == 1].count())
 
         # # handling missing values
         data = eda.missing_values(data)
@@ -79,16 +71,19 @@ def main():
 
         # divide data into train and test set (and save these)
         train_data, test_data = process.split_train_test(data)
+        print("full done")
 
         print("size train data")
         print(train_data.shape)
         
         downsampled_train_data = process.downsample(train_data)
+        print("down done")
 
         print(downsampled_train_data.head())
 
         # upsample data to create class balance (and save it)
         upsampled_train_data = process.upsample(train_data)
+        print("up done")
 
 
     # data is already loaded - only need to load it from file
@@ -156,9 +151,11 @@ def main():
                     f.write(line)
                 f.close()
 
+        # get correlations of the features
+        correlations.show_correlations(train_data)
 
-
-
+        # Train lambdamart and evaluate on test set
+        models.lambdamart(train_data, test_data, 2, 0.10)
 
 if __name__ == '__main__':
 

@@ -19,11 +19,11 @@ def main():
     # only read raw data if so required (cleaned files do not exist yet)
     if READ_RAW_DATA:
 
-        #dataset = '../data/training_set_VU_DM.csv'
+        dataset = '../data/training_set_VU_DM.csv'
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
-        dataset = '../data/testfile.csv'
+        #dataset = '../data/testfile.csv'
 
         # loading in the right file
         data = load.loaddata(dataset)

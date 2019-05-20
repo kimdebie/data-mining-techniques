@@ -17,12 +17,15 @@ def loaddata(filename):
 
     return df
 
-def lambdamartformat(data):
+def lambdamartformat(data, test = False):
 	idx_to_doc = {}
 	new_data = []
 
 	features = list(data.columns.values)
-	features.remove('relevance')
+	features.sort()
+
+	if 'relevance' in features:	
+		features.remove('relevance')
 	features.remove('srch_id')
 	features.remove('prop_id')
 	features.remove('date_time')
@@ -33,7 +36,10 @@ def lambdamartformat(data):
 	idx = 0
 	for index, row in data.iterrows():
 		new_arr = []
-		new_arr.append(row['relevance'])
+		if test == False:
+			new_arr.append(row['relevance'])
+		else:
+			new_arr.append(0)
 		new_arr.append(row['srch_id'])
 		for feature in row[features].values:
 			new_arr.append(feature)

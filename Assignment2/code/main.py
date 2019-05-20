@@ -91,7 +91,7 @@ def main():
     if HYPERPARAM:
 
         # test data is always the same
-        # testdataset = 'data/test_set_VU_DM.csv'
+        testdataset = 'data/test_set_VU_DM.csv'
 
         # get the appropriate training set
         if SAMPLING_METHOD == "downsample":
@@ -110,6 +110,18 @@ def main():
 
         # loading in the data
         train_data = load.loaddata(traindataset)
+
+        # loading in final test set
+        test_data = load.loaddata(testdataset)
+
+        # Remove features from train_data that are not in test_data
+        features_train = list(train_data.columns.values)
+        features_test = list(test_data.columns.values)
+        features_both = list(set(features_train) & set(features_test))
+
+        train_data = train_data[features_both]
+        test_data = test_data[features_both]
+
 
         # Train lambdamart for different hyperparam values and evaluate on validation set
         trees = [5, 10, 50, 100, 150, 300, 400]
@@ -139,6 +151,8 @@ def main():
 
                     # Run lambdamart on training data and evaluate on validation data
                     ndcg = models.lambdamart(X_train, X_validation, tree, lr, SAMPLING_METHOD)
+                    print("ndcg")
+                    print(ndcg)
                     ndcgs.append(ndcg)
 
                 average_ndcg = np.mean(ndcgs)
@@ -152,10 +166,11 @@ def main():
                 f.close()
 
         # get correlations of the features
-        correlations.show_correlations(train_data)
+        #correlations.show_correlations(train_data)
 
         # Train lambdamart and evaluate on test set
         models.lambdamart(train_data, test_data, 2, 0.10)
+
 
 if __name__ == '__main__':
 

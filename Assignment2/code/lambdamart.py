@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import random
-import copy
+#import copy
 from sklearn.tree import DecisionTreeRegressor
 from multiprocessing import Pool
 from RegressionTree import RegressionTree
@@ -316,7 +316,7 @@ class LambdaMART:
 		for query in query_indexes:
 			results = np.zeros(len(query_indexes[query]))
 			for tree in self.trees:
-				results += self.learning_rate * tree.predict(data[query_indexes[query], 2:])
+				results += self.learning_rate * (tree.predict(data[query_indexes[query], 2:]))
 			predicted_sorted_indexes = np.argsort(results)[::-1]
 			t_results = data[query_indexes[query], 0]
 			t_results = t_results[predicted_sorted_indexes]

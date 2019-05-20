@@ -1,7 +1,7 @@
 import pandas as pd
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
+# import matplotlib
+# matplotlib.use('TkAgg')
+# import matplotlib.pyplot as plt
 import numpy as np
 
 def loaddata(filename):
@@ -13,7 +13,7 @@ def loaddata(filename):
     if 'Unnamed: 0' in df.columns:
         df = df.drop('Unnamed: 0', axis=1)
 
-    print(df.dtypes)
+    # print(df.dtypes)
 
     return df
 

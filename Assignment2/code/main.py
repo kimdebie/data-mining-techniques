@@ -6,11 +6,13 @@ import eda
 import process
 import features
 import models
+from sklearn.model_selection import KFold
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = True
+READ_RAW_DATA = False
+HYPERPARAM = True
 PLOT = False
-SAMPLING_METHOD = "downsample" # one of "downsample", "upsample", "none"
+SAMPLING_METHOD = "upsample" # one of "downsample", "upsample", "none"
 
 
 def main():
@@ -22,33 +24,43 @@ def main():
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
-        dataset = '../data/testfile.csv'
+        # dataset = 'data/testfile.csv'
+        # dataset = 'data/full_training_set.csv'
+        dataset = 'data/full_data/training_set_VU_DM.csv'
 
         # loading in the right file
         data = load.loaddata(dataset)
 
-        # create competitor features
+        # # create competitor features
         data = features.create_competitor_features(data)
 
-        # create other features
+        # # create other features
         data = features.other_features(data)
 
-        # add relevance grades
+        # # add relevance grades
         data = features.relevance_score(data)
 
-        # create competitor features
+        # # create competitor features
         data = features.create_competitor_features(data)
 
-        # create other features
+        # # create other features
         data = features.other_features(data)
 
-        # add relevance grades
+        # # add relevance grades
         data = features.relevance_score(data)
 
-        # remove outliers
+        # # remove outliers
+        print("before remove outliers")
+        print(data.dtypes)
+        print(data.loc[data['booking_bool'] == 1].count())
+
         data = eda.remove_outliers(data)
 
-        # handling missing values
+        print("after remove outliers")
+        print(data.dtypes)
+        print(data.loc[data['booking_bool'] == 1].count())
+
+        # # handling missing values
         data = eda.missing_values(data)
 
         if PLOT:
@@ -68,8 +80,12 @@ def main():
         # divide data into train and test set (and save these)
         train_data, test_data = process.split_train_test(data)
 
-        # downsample train data to create class balance (and save it)
+        print("size train data")
+        print(train_data.shape)
+        
         downsampled_train_data = process.downsample(train_data)
+
+        print(downsampled_train_data.head())
 
         # upsample data to create class balance (and save it)
         upsampled_train_data = process.upsample(train_data)
@@ -77,30 +93,72 @@ def main():
 
     # data is already loaded - only need to load it from file
     # when training models, start from here!
-    else:
+    if HYPERPARAM:
 
         # test data is always the same
-        testdataset = '../data/testing_set.csv'
+        # testdataset = 'data/test_set_VU_DM.csv'
 
         # get the appropriate training set
         if SAMPLING_METHOD == "downsample":
 
-            traindataset = '../data/downsampled_training_set.csv'
+            traindataset = 'data/downsampled_training_set.csv'
 
         elif SAMPLING_METHOD == "upsample":
 
-            traindataset = "../data/upsampled_training_set.csv"
+            traindataset = "data/upsampled_training_set.csv"
 
         elif SAMPLING_METHOD == "none":
 
-            traindataset = "../data/full_training_set.csv"
+            traindataset = "data/full_training_set.csv"
+
+        validationdataset = 'data/testing_set.csv'
 
         # loading in the data
         train_data = load.loaddata(traindataset)
-        test_data = load.loaddata(testdataset)
 
-        # Train lambdamart and evaluate on test set
-        models.lambdamart(train_data, test_data, 2, 0.10)
+        # Train lambdamart for different hyperparam values and evaluate on validation set
+        trees = [5, 10, 50, 100, 150, 300, 400]
+        lrs = [0.15, 0.10, 0.8, 0.05, 0.01]
+
+        indices = []
+        for i in range(np.array(train_data.shape[0])):
+            items = [0, 1]
+            indices.append(items)
+
+        indices = np.array(indices)
+
+        # K-fold cross validation for different parameter combinations
+        for tree in trees:
+            for lr in lrs:
+                # indices = np.array(train_data.shape[0])
+                kf = KFold(n_splits = 2)
+
+                ndcgs = []
+                for train_index, test_index in kf.split(indices):
+
+                    train_index = train_index.tolist()
+                    test_index = test_index.tolist()
+
+                    # Split up data
+                    X_train, X_validation = train_data.iloc[train_index], train_data.iloc[test_index]
+
+                    # Run lambdamart on training data and evaluate on validation data
+                    ndcg = models.lambdamart(X_train, X_validation, tree, lr, SAMPLING_METHOD)
+                    ndcgs.append(ndcg)
+
+                average_ndcg = np.mean(ndcgs)
+
+                # Save NDCG
+                file = 'results/hyperparams/crossvalidation.txt'
+                with open(file, 'a') as f:
+                    line = 'trees: ' + str(tree) + ', lr: ' + str(lr) + ', average_ndcg: ' + str(average_ndcg) + '\n'
+                    print(line)
+                    f.write(line)
+                f.close()
+
+
+
+
 
 if __name__ == '__main__':
 

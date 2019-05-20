@@ -9,7 +9,7 @@ import models
 import correlations
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = False
+READ_RAW_DATA = True
 PLOT = False
 SAMPLING_METHOD = "downsample" # one of "downsample", "upsample", "none"
 
@@ -30,21 +30,15 @@ def main():
 
         # create competitor features
         data = features.create_competitor_features(data)
+        print("compf")
 
         # create other features
         data = features.other_features(data)
+        print("oth feat")
 
         # add relevance grades
         data = features.relevance_score(data)
-
-        # create competitor features
-        data = features.create_competitor_features(data)
-
-        # create other features
-        data = features.other_features(data)
-
-        # add relevance grades
-        data = features.relevance_score(data)
+        print("relscore")
 
         # remove outliers
         data = eda.remove_outliers(data)
@@ -68,12 +62,15 @@ def main():
 
         # divide data into train and test set (and save these)
         train_data, test_data = process.split_train_test(data)
+        print("full done")
 
         # downsample train data to create class balance (and save it)
         downsampled_train_data = process.downsample(train_data)
+        print("down done")
 
         # upsample data to create class balance (and save it)
         upsampled_train_data = process.upsample(train_data)
+        print("up done")
 
 
     # data is already loaded - only need to load it from file

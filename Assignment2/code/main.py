@@ -13,7 +13,7 @@ import correlations
 READ_RAW_DATA = False
 HYPERPARAM = True
 PLOT = False
-SAMPLING_METHOD = "upsample" # one of "downsample", "upsample", "none"
+SAMPLING_METHOD = "downsample" # one of "downsample", "upsample", "none"
 
 
 def main():
@@ -91,12 +91,12 @@ def main():
     if HYPERPARAM:
 
         # test data is always the same
-        testdataset = 'data/test_set_VU_DM_completed.csv'
+        testdataset = 'data/test_set_VU_DM.csv'
 
         # get the appropriate training set
         if SAMPLING_METHOD == "downsample":
 
-            traindataset = 'data/downsampled_training_set.csv'
+            traindataset = 'data/downsampled_training_set_only.csv'
 
         elif SAMPLING_METHOD == "upsample":
 
@@ -106,10 +106,12 @@ def main():
 
             traindataset = "data/full_training_set.csv"
 
-        validationdataset = 'data/testing_set.csv'
-
         # loading in the data
+        print(traindataset)
         train_data = load.loaddata(traindataset)
+
+        print("before")
+        print(train_data['relevance'].value_counts())
 
         # loading in final test set
         test_data = load.loaddata(testdataset)
@@ -123,10 +125,17 @@ def main():
 
         features_train = features_both + ['relevance']
 
-        print(features_train)
+        print("relevance counts")
+        print(train_data['relevance'].value_counts())
 
-        train_data = train_data[features_train]
-        test_data = test_data[features_both]
+        train_data = train_data[features_train][:4000]
+        test_data = test_data[features_both][:4000]
+
+        print(train_data.shape)
+        print(train_data.head())
+        print("")
+        print(test_data.shape)
+        print(test_data.head())
 
         # Train lambdamart for different hyperparam values and evaluate on validation set
         trees = [5, 10, 50, 100, 150, 300, 400]
@@ -143,7 +152,7 @@ def main():
         for tree in trees:
             for lr in lrs:
                 # indices = np.array(train_data.shape[0])
-                kf = KFold(n_splits = 2)
+                kf = KFold(n_splits = 5)
 
                 ndcgs = []
                 for train_index, test_index in kf.split(indices):
@@ -156,7 +165,6 @@ def main():
 
                     # Run lambdamart on training data and evaluate on validation data
                     ndcg = models.lambdamart(X_train, X_validation, tree, lr, SAMPLING_METHOD)
-                    print("ndcg")
                     print(ndcg)
                     ndcgs.append(ndcg)
 
@@ -170,11 +178,12 @@ def main():
                     f.write(line)
                 f.close()
 
-        # get correlations of the features
-        #correlations.show_correlations(train_data)
+        get correlations of the features
+        correlations.show_correlations(train_data)
 
-        # Train lambdamart and evaluate on test set
-        models.lambdamart(train_data, test_data, 2, 0.10)
+        Train lambdamart and evaluate on test set
+        ndcg = models.lambdamart(train_data[:4000], test_data[:4000], 2, 0.10, SAMPLING_METHOD)
+        print(ndcg)
 
 
 if __name__ == '__main__':

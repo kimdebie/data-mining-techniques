@@ -22,7 +22,11 @@ def lambdamartformat(data, test = False):
 	new_data = []
 
 	features = list(data.columns.values)
-	features.sort()
+
+	print(features)
+	features = sorted(features)
+
+	print(features)
 
 	if 'relevance' in features:	
 		features.remove('relevance')
@@ -37,9 +41,9 @@ def lambdamartformat(data, test = False):
 	for index, row in data.iterrows():
 		new_arr = []
 		if test == False:
-			new_arr.append(row['relevance'])
+			new_arr.append(float(row['relevance']))
 		else:
-			new_arr.append(0)
+			new_arr.append(0.0)
 		new_arr.append(row['srch_id'])
 		for feature in row[features].values:
 			new_arr.append(feature)

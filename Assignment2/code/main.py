@@ -91,7 +91,7 @@ def main():
     if HYPERPARAM:
 
         # test data is always the same
-        testdataset = 'data/test_set_VU_DM.csv'
+        testdataset = 'data/test_set_VU_DM_completed.csv'
 
         # get the appropriate training set
         if SAMPLING_METHOD == "downsample":
@@ -119,9 +119,14 @@ def main():
         features_test = list(test_data.columns.values)
         features_both = list(set(features_train) & set(features_test))
 
-        train_data = train_data[features_both]
-        test_data = test_data[features_both]
+        print(features_both)
 
+        features_train = features_both + ['relevance']
+
+        print(features_train)
+
+        train_data = train_data[features_train]
+        test_data = test_data[features_both]
 
         # Train lambdamart for different hyperparam values and evaluate on validation set
         trees = [5, 10, 50, 100, 150, 300, 400]

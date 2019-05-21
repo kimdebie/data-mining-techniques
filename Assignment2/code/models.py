@@ -10,7 +10,7 @@ def lambdamart(train, test, nr_trees, lr, datatype, write=False, hyperparams = T
 
     # Transfer train-data to format for LambdaMart
     train_np, _ = load.lambdamartformat(train)
-    test_np, idx_to_doc = load.lambdamartformat(test)
+    test_np, idx_to_doc = load.lambdamartformat(test, False)
 
     # Train LambdaMart model
     model = fn.LambdaMART(training_data=train_np, number_of_trees=nr_trees, learning_rate=lr)

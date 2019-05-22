@@ -11,8 +11,9 @@ import correlations
 
 # global variables that define what tasks to perform
 READ_RAW_DATA = False
-HYPERPARAM = True
 PLOT = False
+HYPERPARAM = True
+LAMBDAMART = False
 SAMPLING_METHOD = "downsample" # one of "downsample", "upsample", "none"
 
 
@@ -22,16 +23,14 @@ def main():
     if READ_RAW_DATA:
 
         # train set
-        dataset = '../data/training_set_VU_DM.csv'
+        dataset = '../../data/training_set_VU_DM.csv'
 
         # test set (turn off relevance score in this case!)
-        #dataset = '../data/test_set_VU_DM.csv'
+        #dataset = '../../data/test_set_VU_DM.csv'
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
-        # dataset = 'data/testfile.csv'
-        # dataset = 'data/full_training_set.csv'
-        dataset = 'data/full_data/training_set_VU_DM.csv'
+        # dataset = '../data/testfile.csv'
 
         # loading in the right file
         data = load.loaddata(dataset)
@@ -45,15 +44,7 @@ def main():
         # # add relevance grades
         data = features.relevance_score(data)
 
-        # # create competitor features
-        data = features.create_competitor_features(data)
-
-        # # create other features
-        data = features.other_features(data)
-
-        # # add relevance grades
-        data = features.relevance_score(data)
-
+        # remove outliers
         data = eda.remove_outliers(data)
 
         # # handling missing values
@@ -73,73 +64,44 @@ def main():
             # plot impact of price of competitor on booking
             eda.plot_competitor_price_impact(sample_data)
 
-        # write VU test set to file
-        #data.to_csv('../data/test_set_VU_DM_completed.csv')
+            # get correlations of the features
+            correlations.show_correlations(sample_data)
 
         # divide data into train and test set (and save these)
         train_data, test_data = process.split_train_test(data)
 
-        print("size train data")
-        print(train_data.shape)
-
+        # downsample data to create class balance (and save)
         downsampled_train_data = process.downsample(train_data)
-
-        print(downsampled_train_data.head())
 
         # upsample data to create class balance (and save it)
         upsampled_train_data = process.upsample(train_data)
 
 
     # data is already loaded - only need to load it from file
-    # when training models, start from here!
+    # test for the best set of hyperparameters
     if HYPERPARAM:
-
-        # test data is always the same
-        testdataset = 'data/test_set_VU_DM.csv'
 
         # get the appropriate training set
         if SAMPLING_METHOD == "downsample":
 
-            traindataset = 'data/downsampled_training_set_only.csv'
+            traindataset = '../data/downsampled_crossvalidation_set.csv'
 
         elif SAMPLING_METHOD == "upsample":
 
-            traindataset = "data/upsampled_training_set.csv"
+            traindataset = "../data/upsampled_crossvalidation_set.csv"
 
         elif SAMPLING_METHOD == "none":
 
-            traindataset = "data/full_training_set.csv"
+            traindataset = "../data/full_crossvalidation_set.csv"
 
         # loading in the data
-        print(traindataset)
         train_data = load.loaddata(traindataset)
 
-        print("before")
-        print(train_data['relevance'].value_counts())
+        # remove columns not in test dataset
+        keep_cols = [col for col in train_data.columns if col not in ['booking_bool', 'click_bool']]
 
-        # loading in final test set
-        test_data = load.loaddata(testdataset)
-
-        # Remove features from train_data that are not in test_data
-        features_train = list(train_data.columns.values)
-        features_test = list(test_data.columns.values)
-        features_both = list(set(features_train) & set(features_test))
-
-        print(features_both)
-
-        features_train = features_both + ['relevance']
-
-        print("relevance counts")
-        print(train_data['relevance'].value_counts())
-
-        train_data = train_data[features_train][:4000]
-        test_data = test_data[features_both][:4000]
-
-        print(train_data.shape)
-        print(train_data.head())
-        print("")
-        print(test_data.shape)
-        print(test_data.head())
+        # sample a smaller subset to make this all feasible
+        train_data = train_data[keep_cols].sample(n=4000)
 
         # Train lambdamart for different hyperparam values and evaluate on validation set
         trees = [5, 10, 50, 100, 150, 300, 400]
@@ -175,19 +137,45 @@ def main():
                 average_ndcg = np.mean(ndcgs)
 
                 # Save NDCG
-                file = 'results/hyperparams/crossvalidation.txt'
+                file = '../results/hyperparams/crossvalidation.txt'
                 with open(file, 'a') as f:
                     line = 'trees: ' + str(tree) + ', lr: ' + str(lr) + ', average_ndcg: ' + str(average_ndcg) + '\n'
                     print(line)
                     f.write(line)
                 f.close()
 
-        get correlations of the features
-        correlations.show_correlations(train_data)
+        # run the full model
+        if LAMBDAMART:
 
-        Train lambdamart and evaluate on test set
-        ndcg = models.lambdamart(train_data[:4000], test_data[:4000], 2, 0.10, SAMPLING_METHOD)
-        print(ndcg)
+            # test data is always the same
+            testdataset = '../data/testing_set_only.csv'
+
+            # get the appropriate training set
+            if SAMPLING_METHOD == "downsample":
+
+                traindataset = '../data/downsampled_training_set_only.csv'
+
+            elif SAMPLING_METHOD == "upsample":
+
+                traindataset = "../data/upsampled_training_set_only.csv"
+
+            elif SAMPLING_METHOD == "none":
+
+                traindataset = "../data/full_training_set_only.csv"
+
+            # loading in the data
+            train_data = load.loaddata(traindataset)
+
+            # loading in final test set
+            test_data = load.loaddata(testdataset)
+
+            # hyperparameters
+            trees = 2
+            lrs = 0.10
+
+            # train lambdamart and evaluate on test set
+            ndcg = models.lambdamart(train_data, test_data, trees, lrs, SAMPLING_METHOD)
+            print(ndcg)
 
 
 if __name__ == '__main__':

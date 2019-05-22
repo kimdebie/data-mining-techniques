@@ -17,7 +17,7 @@ def lambdamart(train, test, nr_trees, lr, datatype, write=False, hyperparams = T
     model.fit()
 
     # Save model for later use
-    name = 'results/models/lambdamart_' + str(nr_trees) + '_' + str(lr)
+    name = '../results/models/lambdamart_' + str(nr_trees) + '_' + str(lr)
     model.save(name)
 
 	# Predict for test data
@@ -31,7 +31,7 @@ def lambdamart(train, test, nr_trees, lr, datatype, write=False, hyperparams = T
     ordered_docs = [idx_to_doc[idx] for idx in order]
 
     # Save ranking
-    file = 'results/lambdamart_' + str(nr_trees) + '_' + str(lr) + '.txt'
+    file = '../results/lambdamart_' + str(nr_trees) + '_' + str(lr) + '_' + datatype + '.txt'
     with open(file, 'w+') as f:
         f.write('srch_id, prop_id \n')
 
@@ -72,4 +72,3 @@ def lambdamart(train, test, nr_trees, lr, datatype, write=False, hyperparams = T
         # f.close()
 
     return average_ndcg
-

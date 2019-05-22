@@ -10,8 +10,8 @@ from sklearn.model_selection import KFold
 import correlations
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = False
-HYPERPARAM = True
+READ_RAW_DATA = True
+HYPERPARAM = False
 PLOT = False
 SAMPLING_METHOD = "upsample" # one of "downsample", "upsample", "none"
 
@@ -25,7 +25,7 @@ def main():
         # to make the code less slow! Comment it out for finalizing
         # dataset = 'data/testfile.csv'
         # dataset = 'data/full_training_set.csv'
-        dataset = 'data/full_data/training_set_VU_DM.csv'
+        dataset = '../data_2/test_set_VU_DM_2.csv'
 
         # loading in the right file
         data = load.loaddata(dataset)
@@ -38,9 +38,6 @@ def main():
         data = features.other_features(data)
         print("oth feat")
 
-        # # add relevance grades
-        data = features.relevance_score(data)
-
         # # create competitor features
         data = features.create_competitor_features(data)
 
@@ -48,7 +45,7 @@ def main():
         data = features.other_features(data)
 
         # # add relevance grades
-        data = features.relevance_score(data)
+        #data = features.relevance_score(data)
 
         data = eda.remove_outliers(data)
 
@@ -75,7 +72,7 @@ def main():
 
         print("size train data")
         print(train_data.shape)
-        
+
         downsampled_train_data = process.downsample(train_data)
         print("down done")
 
@@ -100,7 +97,7 @@ def main():
 
         elif SAMPLING_METHOD == "upsample":
 
-            traindataset = "data/upsampled_training_set.csv"
+            traindataset = "data/upsampled_test_set.csv"
 
         elif SAMPLING_METHOD == "none":
 

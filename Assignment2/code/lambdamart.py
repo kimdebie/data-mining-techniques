@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import random
-import copy
+#import copy
 from sklearn.tree import DecisionTreeRegressor
 from multiprocessing import Pool
 from RegressionTree import RegressionTree
@@ -243,7 +243,7 @@ class LambdaMART:
 		idcg = [ideal_dcg(scores) for scores in true_scores]
 
 		for k in range(self.number_of_trees):
-			print('Tree %d' % (k))
+			# print('Tree %d' % (k))
 			lambdas = np.zeros(len(predicted_scores))
 			w = np.zeros(len(predicted_scores))
 			pred_scores = [predicted_scores[query_indexes[query]] for query in query_keys]
@@ -316,11 +316,12 @@ class LambdaMART:
 		for query in query_indexes:
 			results = np.zeros(len(query_indexes[query]))
 			for tree in self.trees:
-				results += self.learning_rate * tree.predict(data[query_indexes[query], 2:])
+				results += self.learning_rate * (tree.predict(data[query_indexes[query], 2:]))
 			predicted_sorted_indexes = np.argsort(results)[::-1]
 			t_results = data[query_indexes[query], 0]
 			t_results = t_results[predicted_sorted_indexes]
 			predicted_scores[query_indexes[query]] = results
+			print(t_results)
 			dcg_val = dcg_k(t_results, k)
 			idcg_val = ideal_dcg_k(t_results, k)
 			ndcg_val = (dcg_val / idcg_val)

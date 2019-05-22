@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH --job-name=DM
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=10:00:00
+#SBATCH --mem=10G
+#SBATCH --partition=gpu_shared_course
+#SBATCH --gres=gpu:1
+
+source activate dm
+
+python3 -u code/main.py |& tee -a results_DM.txt

@@ -102,6 +102,7 @@ def main():
 
         # sample a smaller subset to make this all feasible
         train_data = train_data[keep_cols].sample(n=4000)
+        print(train_data.columns)
 
         # Train lambdamart for different hyperparam values and evaluate on validation set
         trees = [5, 10, 50, 100, 150, 300, 400]
@@ -137,7 +138,7 @@ def main():
                 average_ndcg = np.mean(ndcgs)
 
                 # Save NDCG
-                file = '../results/hyperparams/crossvalidation.txt'
+                file = '../results/hyperparams/crossvalidation_' + SAMPLING_METHOD + '.txt'
                 with open(file, 'a') as f:
                     line = 'trees: ' + str(tree) + ', lr: ' + str(lr) + ', average_ndcg: ' + str(average_ndcg) + '\n'
                     print(line)

@@ -19,7 +19,11 @@ def main():
     # only read raw data if so required (cleaned files do not exist yet)
     if READ_RAW_DATA:
 
+        # train set
         dataset = '../data/training_set_VU_DM.csv'
+
+        # test set (turn off relevance score in this case!)
+        #dataset = '../data/test_set_VU_DM.csv'
 
         # take the first 1000 lines of the dataset only - use this for testing
         # to make the code less slow! Comment it out for finalizing
@@ -30,15 +34,12 @@ def main():
 
         # create competitor features
         data = features.create_competitor_features(data)
-        print("compf")
 
         # create other features
         data = features.other_features(data)
-        print("oth feat")
 
         # add relevance grades
         data = features.relevance_score(data)
-        print("relscore")
 
         # remove outliers
         data = eda.remove_outliers(data)
@@ -60,17 +61,17 @@ def main():
             # plot impact of price of competitor on booking
             eda.plot_competitor_price_impact(sample_data)
 
+        # write VU test set to file
+        #data.to_csv('../data/test_set_VU_DM_completed.csv')
+
         # divide data into train and test set (and save these)
         train_data, test_data = process.split_train_test(data)
-        print("full done")
 
         # downsample train data to create class balance (and save it)
         downsampled_train_data = process.downsample(train_data)
-        print("down done")
 
         # upsample data to create class balance (and save it)
         upsampled_train_data = process.upsample(train_data)
-        print("up done")
 
 
     # data is already loaded - only need to load it from file

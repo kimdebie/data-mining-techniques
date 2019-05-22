@@ -45,8 +45,8 @@ def relevance_score(df):
     '''Add relevance score based on clicking and booking.'''
 
     df['relevance'] = 0 #df.apply(relevance, axis=1)
-    df[df['booking_bool'] == 1].relevance = 5
-    df[(df.click_bool == 0) & (df.booking_bool == 0)].relevance = 1
+    df.loc[df['booking_bool'] == 1, 'relevance'] = 5
+    df.loc[(df.click_bool == 1) & (df.booking_bool == 0), 'relevance'] = 1
 
 
     return df

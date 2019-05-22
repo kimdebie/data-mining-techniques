@@ -10,7 +10,8 @@ from sklearn.model_selection import KFold
 import correlations
 
 # global variables that define what tasks to perform
-READ_RAW_DATA = False
+READ_RAW_DATA = True
+HYPERPARAM = False
 PLOT = False
 HYPERPARAM = True
 LAMBDAMART = False
@@ -42,7 +43,7 @@ def main():
         data = features.other_features(data)
 
         # # add relevance grades
-        data = features.relevance_score(data)
+        #data = features.relevance_score(data)
 
         # remove outliers
         data = eda.remove_outliers(data)
@@ -70,7 +71,9 @@ def main():
         # divide data into train and test set (and save these)
         train_data, test_data = process.split_train_test(data)
 
-        # downsample data to create class balance (and save)
+        print("size train data")
+        print(train_data.shape)
+
         downsampled_train_data = process.downsample(train_data)
 
         # upsample data to create class balance (and save it)

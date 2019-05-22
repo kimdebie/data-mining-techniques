@@ -1,0 +1,5 @@
+trees: 5, lr: 0.15, average_ndcg: 0.659995634442677
+trees: 5, lr: 0.1, average_ndcg: 0.659995634442677
+trees: 5, lr: 0.8, average_ndcg: 0.659995634442677
+trees: 5, lr: 0.05, average_ndcg: 0.659995634442677
+trees: 5, lr: 0.01, average_ndcg: 0.659995634442677
